@@ -2,12 +2,18 @@
 #define OSRM_NB_ROUTEPARAMETER_H
 
 #include "engine/api/route_parameters.hpp"
+#include "parameters/baseparameter_nb.h"
 
 #include <nanobind/nanobind.h>
 
 #include <unordered_map>
 
 using osrm::engine::api::RouteParameters;
+
+// Must be visible in every TU that converts these enum types to/from Python.
+NB_MAKE_OPAQUE(osrm::engine::api::RouteParameters::GeometriesType)
+NB_MAKE_OPAQUE(osrm::engine::api::RouteParameters::OverviewType)
+NB_MAKE_OPAQUE(osrm::engine::api::RouteParameters::AnnotationsType)
 
 void init_RouteParameters(nanobind::module_& m);
 

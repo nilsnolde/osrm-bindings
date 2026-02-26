@@ -78,12 +78,12 @@ class TestMatch:
                    and l["annotation"] 
                    and l["annotation"]["speed"])
         for l in res["matchings"][0]["legs"]:
-            assert(not l["annotation"]["weight"] 
-                   and not l["annotation"]["datasources"]
-                   and not l["annotation"]["duration"] 
-                   and not l["annotation"]["distance"] 
-                   and not l["annotation"]["nodes"])
-        assert(not "geometry" in res["matchings"][0])
+            assert("weight" not in l["annotation"]
+                   and "datasources" not in l["annotation"]
+                   and "duration" not in l["annotation"]
+                   and "distance" not in l["annotation"]
+                   and "nodes" not in l["annotation"])
+        assert("geometry" not in res["matchings"][0])
 
     def test_match_severalannotations(self):
         match_params = osrm.MatchParameters(
@@ -104,10 +104,10 @@ class TestMatch:
                    and l["annotation"]["distance"] is not None
                    and l["annotation"]["duration"] is not None
                    and l["annotation"]["nodes"] is not None)
-            assert(not l["annotation"]["weight"]
-                   and not l["annotation"]["datasources"]
-                   and not l["annotation"]["speed"])
-        assert(not "geometry" in res["matchings"][0])
+            assert("weight" not in l["annotation"]
+                   and "datasources" not in l["annotation"]
+                   and "speed" not in l["annotation"])
+        assert("geometry" not in res["matchings"][0])
 
     def test_match_alloptions(self):
         match_params = osrm.MatchParameters(

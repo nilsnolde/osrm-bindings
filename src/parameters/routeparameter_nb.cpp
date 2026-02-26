@@ -6,6 +6,7 @@
 #include <nanobind/nanobind.h>
 #include <nanobind/operators.h>
 #include <nanobind/stl/string.h>
+#include <nanobind/stl/optional.h>
 #include <nanobind/stl/vector.h>
 
 namespace nb = nanobind;
@@ -65,13 +66,13 @@ void init_RouteParameters(nb::module_& m) {
                 const std::vector<RouteParameters::AnnotationsType>& annotations,
                 RouteParameters::GeometriesType geometries,
                 RouteParameters::OverviewType overview,
-                const boost::optional<bool> continue_straight,
+                const std::optional<bool> continue_straight,
                 std::vector<std::size_t> waypoints,
                     std::vector<osrm::util::Coordinate> coordinates,
-                    std::vector<boost::optional<osrm::engine::Hint>> hints,
-                    std::vector<boost::optional<double>> radiuses,
-                    std::vector<boost::optional<osrm::engine::Bearing>> bearings,
-                    const std::vector<boost::optional<osrm::engine::Approach>>& approaches,
+                    std::vector<std::optional<osrm::engine::Hint>> hints,
+                    std::vector<std::optional<double>> radiuses,
+                    std::vector<std::optional<osrm::engine::Bearing>> bearings,
+                    const std::vector<std::optional<osrm::engine::Approach>>& approaches,
                     bool generate_hints,
                     std::vector<std::string> exclude,
                     const BaseParameters::SnappingType snapping
@@ -102,12 +103,12 @@ void init_RouteParameters(nb::module_& m) {
                 "annotations"_a = std::vector<std::string>(),
                 "geometries"_a = std::string(),
                 "overview"_a = std::string(),
-                "continue_straight"_a = boost::optional<bool>(),
+                "continue_straight"_a = std::optional<bool>(),
                 "waypoints"_a = std::vector<std::size_t>(),
                     "coordinates"_a = std::vector<osrm::util::Coordinate>(),
-                    "hints"_a = std::vector<boost::optional<osrm::engine::Hint>>(),
-                    "radiuses"_a = std::vector<boost::optional<double>>(),
-                    "bearings"_a = std::vector<boost::optional<osrm::engine::Bearing>>(),
+                    "hints"_a = std::vector<std::optional<osrm::engine::Hint>>(),
+                    "radiuses"_a = std::vector<std::optional<double>>(),
+                    "bearings"_a = std::vector<std::optional<osrm::engine::Bearing>>(),
                     "approaches"_a = std::vector<std::string*>(),
                     "generate_hints"_a = true,
                     "exclude"_a = std::vector<std::string>(),

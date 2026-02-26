@@ -5,6 +5,7 @@
 #include <nanobind/nanobind.h>
 #include <nanobind/make_iterator.h>
 #include <nanobind/stl/string.h>
+#include <nanobind/stl/string_view.h>
 
 namespace nb = nanobind;
 namespace json = osrm::util::json;
@@ -23,11 +24,14 @@ void init_JSONContainer(nb::module_& m) {
             return visitor.visitobject(obj);
         })
         .def("__getitem__", [](json::Object& obj, const std::string& key) {
-            return obj.values[key];
+            return obj.values.at(key);
         })
-        .def("__iter__", [](const json::Object& obj) {
-            return nb::make_iterator(nb::type<json::Value>(), "iterator",
-                                    obj.values.begin(), obj.values.end());
+        .def("__contains__", [](const json::Object& obj, const std::string& key) {
+            return obj.values.count(key) > 0;
+        })
+        .def("__iter__", [m](const json::Object& obj) {
+            return nb::make_key_iterator(m, "key_iterator",
+                                        obj.values.begin(), obj.values.end());
         }, nb::keep_alive<0, 1>());
 
     nb::class_<json::Array>(m, "Array")
@@ -45,8 +49,8 @@ void init_JSONContainer(nb::module_& m) {
         .def("__getitem__", [](json::Array& arr, int i) {
             return arr.values[i];
         })
-        .def("__iter__", [](const json::Array& arr) {
-            return nb::make_iterator(nb::type<json::Value>(), "iterator",
+        .def("__iter__", [m](const json::Array& arr) {
+            return nb::make_iterator(m, "value_iterator",
                                     arr.values.begin(), arr.values.end());
         }, nb::keep_alive<0, 1>());
 

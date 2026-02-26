@@ -7,7 +7,7 @@
 #include "engine/api/table_parameters.hpp"
 #include "engine/api/trip_parameters.hpp"
 
-#include <boost/optional.hpp>
+#include <optional>
 
 #include <unordered_map>
 #include <vector>
@@ -24,10 +24,10 @@ namespace osrm_nb_util {
 
 void assign_baseparameters(BaseParameters* params,
                            std::vector<osrm::util::Coordinate> coordinates,
-                           std::vector<boost::optional<osrm::engine::Hint>> hints,
-                           std::vector<boost::optional<double>> radiuses,
-                           std::vector<boost::optional<osrm::engine::Bearing>> bearings,
-                           const std::vector<boost::optional<osrm::engine::Approach>>& approaches,
+                           std::vector<std::optional<osrm::engine::Hint>> hints,
+                           std::vector<std::optional<double>> radiuses,
+                           std::vector<std::optional<osrm::engine::Bearing>> bearings,
+                           const std::vector<std::optional<osrm::engine::Approach>>& approaches,
                            bool generate_hints,
                            std::vector<std::string> exclude,
                            const BaseParameters::SnappingType snapping)
@@ -48,7 +48,7 @@ void assign_routeparameters(RouteParameters* params,
                             const std::vector<RouteParameters::AnnotationsType>& annotations,
                             RouteParameters::GeometriesType geometries,
                             RouteParameters::OverviewType overview,
-                            const boost::optional<bool> continue_straight,
+                            const std::optional<bool> continue_straight,
                             std::vector<std::size_t> waypoints) 
 {
     params->steps = steps;

@@ -2,12 +2,16 @@
 #define OSRM_NB_MATCHPARAMETER_H
 
 #include "engine/api/match_parameters.hpp"
+#include "parameters/routeparameter_nb.h"
 
 #include <nanobind/nanobind.h>
 
 #include <unordered_map>
 
 using osrm::engine::api::MatchParameters;
+
+// Must be visible in every TU that converts these enum types to/from Python.
+NB_MAKE_OPAQUE(osrm::engine::api::MatchParameters::GapsType)
 
 void init_MatchParameters(nanobind::module_& m);
 

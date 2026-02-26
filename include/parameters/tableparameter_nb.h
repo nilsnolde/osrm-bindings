@@ -2,12 +2,17 @@
 #define OSRM_NB_TABLEPARAMETER_H
 
 #include "engine/api/table_parameters.hpp"
+#include "parameters/baseparameter_nb.h"
 
 #include <nanobind/nanobind.h>
 
 #include <unordered_map>
 
 using osrm::engine::api::TableParameters;
+
+// Must be visible in every TU that converts these enum types to/from Python.
+NB_MAKE_OPAQUE(osrm::engine::api::TableParameters::FallbackCoordinateType)
+NB_MAKE_OPAQUE(osrm::engine::api::TableParameters::AnnotationsType)
 
 void init_TableParameters(nanobind::module_& m);
 

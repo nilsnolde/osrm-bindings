@@ -2,12 +2,17 @@
 #define OSRM_NB_TRIPPARAMETER_H
 
 #include "engine/api/trip_parameters.hpp"
+#include "parameters/routeparameter_nb.h"
 
 #include <nanobind/nanobind.h>
 
 #include <unordered_map>
 
 using osrm::engine::api::TripParameters;
+
+// Must be visible in every TU that converts these enum types to/from Python.
+NB_MAKE_OPAQUE(osrm::engine::api::TripParameters::SourceType)
+NB_MAKE_OPAQUE(osrm::engine::api::TripParameters::DestinationType)
 
 void init_TripParameters(nanobind::module_& m);
 

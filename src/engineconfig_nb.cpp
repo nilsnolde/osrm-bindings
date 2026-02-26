@@ -7,6 +7,8 @@
 #include <nanobind/nanobind.h>
 #include <nanobind/stl/string.h>
 
+NB_MAKE_OPAQUE(osrm::engine::EngineConfig::Algorithm)
+
 namespace nb = nanobind;
 
 void init_EngineConfig(nb::module_& m) {

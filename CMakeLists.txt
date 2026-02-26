@@ -11,7 +11,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 if(NOT SKBUILD)
   message(WARNING
   "This CMake file is meant to be executed using 'scikit-build-core'.
-  Running it directly will almost certainly not produce the desired
+  Running it directly might not produce the desired
   result. If you are a user trying to install this package, use the
   command below, which will install all necessary build dependencies,
   compile the package in an isolated environment, and then install it.
@@ -26,7 +26,7 @@ if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
 endif()
 
-find_package(Python 3.8
+find_package(Python 3.10
   REQUIRED COMPONENTS Interpreter Development.Module
   OPTIONAL_COMPONENTS Development.SABIModule
 )
@@ -68,10 +68,7 @@ nanobind_add_module(
 
 target_include_directories(${EXT_NAME} 
   PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/utility
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/parameters
-)
+    ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 find_package(LibOSRM)

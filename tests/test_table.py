@@ -20,7 +20,7 @@ class TestTable:
         )
         res = self.py_osrm.Table(table_params)
         assert(res["distances"])
-        assert(not res["durations"])
+        assert("durations" not in res)
 
         table_params = osrm.TableParameters(
             coordinates = [three_test_coordinates[0], three_test_coordinates[1]],
@@ -28,7 +28,7 @@ class TestTable:
         )
         res = self.py_osrm.Table(table_params)
         assert(res["durations"])
-        assert(not res["distances"])
+        assert("distances" not in res)
 
         table_params = osrm.TableParameters(
             coordinates = [three_test_coordinates[0], three_test_coordinates[1]],
@@ -43,7 +43,7 @@ class TestTable:
         )
         res = self.py_osrm.Table(table_params)
         assert(res["durations"])
-        assert(not res["distances"])
+        assert("distances" not in res)
 
     def test_table_snapping(self):
         table_params = osrm.TableParameters(
@@ -105,8 +105,8 @@ class TestTable:
         )
         table_params.skip_waypoints = True
         res = self.py_osrm.Table(table_params)
-        assert(not res["sources"])
-        assert(not res["destinations"])
+        assert("sources" not in res)
+        assert("destinations" not in res)
 
     def test_table_fallbackspeeds(self):
         table_params = osrm.TableParameters(

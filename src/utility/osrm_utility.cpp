@@ -36,8 +36,8 @@ void check_status(osrm::engine::Status status, osrm::util::json::Object& res) {
         return;
     }
 
-    const std::string code = res.values["code"].get<osrm::util::json::String>().value;
-    const std::string msg = res.values["message"].get<osrm::util::json::String>().value;
+    const std::string code = std::get<osrm::util::json::String>(res.values.at("code")).value;
+    const std::string msg = std::get<osrm::util::json::String>(res.values.at("message")).value;
     
     throw std::runtime_error(code + " - " + msg);
 }
@@ -78,7 +78,7 @@ void populate_cfg_from_kwargs(const nb::kwargs& kwargs, EngineConfig& config) {
                 config.default_radius = UNLIMITED;
             }
             catch(const nb::cast_error&) {
-                assign_val(config.default_radius.get(), val);
+                assign_val(config.default_radius, val);
             }
         } },
         { "max_alternatives", [&config](const std::pair<nb::handle, nb::handle>& val) {
@@ -90,7 +90,7 @@ void populate_cfg_from_kwargs(const nb::kwargs& kwargs, EngineConfig& config) {
         { "memory_file", [&config](const std::pair<nb::handle, nb::handle>& val) {
             std::string str;
             assign_val(str, val);
-            config.memory_file = boost::filesystem::path(str);
+            config.memory_file = std::filesystem::path(str);
         } },
         { "use_mmap", [&config](const std::pair<nb::handle, nb::handle>& val) {
             assign_val(config.use_mmap, val);

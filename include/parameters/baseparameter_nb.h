@@ -9,6 +9,10 @@
 
 using osrm::engine::api::BaseParameters;
 
+// Must be visible in every TU that converts these enum types to/from Python.
+NB_MAKE_OPAQUE(osrm::engine::api::BaseParameters::SnappingType)
+NB_MAKE_OPAQUE(osrm::engine::api::BaseParameters::OutputFormatType)
+
 void init_BaseParameters(nanobind::module_& m);
 
 static const std::unordered_map<std::string, BaseParameters::SnappingType> snapping_map {
