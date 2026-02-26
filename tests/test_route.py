@@ -249,14 +249,14 @@ class TestRoute:
         )
         route_params = osrm.RouteParameters(
             coordinates = two_test_coordinates,
-            alternatives = 10
+            number_of_alternatives = 10
         )
         res = engine.Route(route_params)
         assert(isinstance(res["routes"], osrm.Array))
 
         route_params = osrm.RouteParameters(
             coordinates = two_test_coordinates,
-            alternatives = 11
+            number_of_alternatives = 11
         )
         with pytest.raises(RuntimeError) as ex:
             res = engine.Route(route_params)

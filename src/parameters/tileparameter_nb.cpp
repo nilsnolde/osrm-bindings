@@ -15,7 +15,7 @@ void init_TileParameters(nb::module_& m) {
     using osrm::engine::api::TileParameters;
 
     nb::class_<TileParameters>(m, "TileParameters", nb::is_final())
-        .def(nb::init<>(), nb::raw_doc("Instantiates an instance of TileParameters.\n\n"
+        .def(nb::init<>(), "Instantiates an instance of TileParameters.\n\n"
             "Examples:\n\
                 >>> tile_params = osrm.TileParameters([17059, 11948, 15])\n\
                 >>> tile_params = osrm.TileParameters(\n\
@@ -37,7 +37,7 @@ void init_TileParameters(nb::module_& m) {
                 x (int): x value.\n\
                 y (int): y value.\n\
                 z (int): z value."
-            ))
+            )
         .def(nb::init<unsigned int, unsigned int, unsigned int>())
         .def("__init__", [](TileParameters* t, const std::vector<unsigned int>& coord) {
             if(coord.size() != 3) {

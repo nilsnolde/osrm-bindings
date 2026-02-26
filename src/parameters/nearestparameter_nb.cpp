@@ -17,7 +17,7 @@ void init_NearestParameters(nb::module_& m) {
     using osrm::engine::api::NearestParameters;
 
     nb::class_<NearestParameters, BaseParameters>(m, "NearestParameters")
-        .def(nb::init<>(), nb::raw_doc("Instantiates an instance of NearestParameters.\n\n"
+        .def(nb::init<>(), "Instantiates an instance of NearestParameters.\n\n"
             "Examples:\n\
                 >>> nearest_params = osrm.NearestParameters(\n\
                         coordinates = [(7.41337, 43.72956)],\n\
@@ -33,7 +33,7 @@ void init_NearestParameters(nb::module_& m) {
             "Attributes:\n\
                 number_of_results (unsigned int): Number of nearest segments that should be returned.\n\
                 BaseParameters (osrm.osrm_ext.BaseParameters): Attributes from parent class."
-            ))
+            )
         .def("__init__", [](NearestParameters* t,
                 std::vector<osrm::util::Coordinate> coordinates,
                 std::vector<std::optional<osrm::engine::Hint>> hints,

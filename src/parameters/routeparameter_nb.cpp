@@ -17,7 +17,7 @@ void init_RouteParameters(nb::module_& m) {
     using osrm::engine::api::RouteParameters;
 
     nb::class_<RouteParameters, BaseParameters>(m, "RouteParameters")
-        .def(nb::init<>(), nb::raw_doc("Instantiates an instance of RouteParameters.\n\n"
+        .def(nb::init<>(), "Instantiates an instance of RouteParameters.\n\n"
             "Examples:\n\
                 >>> route_params = osrm.RouteParameters(\n\
                         coordinates = [(7.41337, 43.72956), (7.41546, 43.73077)],\n\
@@ -59,7 +59,7 @@ void init_RouteParameters(nb::module_& m) {
                 overview (string): Add overview geometry either full, simplified.\n\
                 continue_straight (bool): Forces the route to keep going straight at waypoints, constraining u-turns.\n\
                 BaseParameters (osrm.osrm_ext.BaseParameters): Attributes from parent class."
-            ))
+            )
         .def("__init__", [](RouteParameters* t,
                 const bool steps,
                 int number_of_alternatives,

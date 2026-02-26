@@ -16,7 +16,7 @@ void init_BaseParameters(nb::module_& m) {
     using osrm::engine::api::BaseParameters;
 
     nb::class_<BaseParameters>(m, "BaseParameters")
-        .def(nb::init<>(), nb::raw_doc("Instantiates an instance of BaseParameters.\n\n"
+        .def(nb::init<>(), "Instantiates an instance of BaseParameters.\n\n"
             "Note:\n\
                 This is the parent class to many parameter classes, and not intended to be used on its own.\n\n"
             "Args:\n\
@@ -42,7 +42,7 @@ void init_BaseParameters(nb::module_& m) {
                 generate_hints (bool): Adds a hint to the response which can be used in subsequent requests.\n\
                 skip_waypoints (list): Removes waypoints from the response.\n\
                 snapping (string): 'default' snapping avoids is_startpoint edges, 'any' will snap to any edge in the graph."
-            ))
+            )
         .def_rw("coordinates", &BaseParameters::coordinates)
         .def_rw("hints", &BaseParameters::hints)
         .def_rw("radiuses", &BaseParameters::radiuses)

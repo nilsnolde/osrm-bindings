@@ -18,7 +18,7 @@ void init_MatchParameters(nb::module_& m) {
     using osrm::engine::api::MatchParameters;
 
     nb::class_<MatchParameters, RouteParameters>(m, "MatchParameters")
-        .def(nb::init<>(), nb::raw_doc("Instantiates an instance of MatchParameters.\n\n"
+        .def(nb::init<>(), "Instantiates an instance of MatchParameters.\n\n"
             "Examples:\n\
                 >>> match_params = osrm.MatchParameters(\n\
                         coordinates = [(7.41337, 43.72956), (7.41546, 43.73077), (7.41862, 43.73216)],\n\
@@ -41,7 +41,7 @@ void init_MatchParameters(nb::module_& m) {
                 gaps (string): Allows the input track splitting based on huge timestamp gaps between points.\n\
                 tidy (bool): Allows the input track modification to obtain better matching quality for noisy tracks.\n\
                 RouteParameters (osrm.RouteParameters): Attributes from parent class."
-            ))
+            )
         .def("__init__", [](MatchParameters* t,
                 std::vector<unsigned> timestamps,
                 MatchParameters::GapsType gaps_type,

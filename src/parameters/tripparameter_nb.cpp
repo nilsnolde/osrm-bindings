@@ -18,7 +18,7 @@ void init_TripParameters(nb::module_& m) {
     using osrm::engine::api::TripParameters;
 
     nb::class_<TripParameters, RouteParameters>(m, "TripParameters")
-        .def(nb::init<>(), nb::raw_doc("Instantiates an instance of TripParameters.\n\n"
+        .def(nb::init<>(), "Instantiates an instance of TripParameters.\n\n"
             "Examples:\n\
                 >>> trip_params = osrm.TripParameters(\n\
                         coordinates = [(7.41337, 43.72956), (7.41546, 43.73077)],\n\
@@ -41,7 +41,7 @@ void init_TripParameters(nb::module_& m) {
                 destination (string): Returned route ends at 'any' or 'last' coordinate.\n\
                 roundtrip (bool): Returned route is a roundtrip (route returns to first location).\n\
                 RouteParameters (osrm.RouteParameters): Attributes from parent class."
-            ))
+            )
         .def("__init__", [](TripParameters* t,
                 TripParameters::SourceType source,
                 TripParameters::DestinationType destination,
