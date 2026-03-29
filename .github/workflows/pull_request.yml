@@ -9,12 +9,12 @@ on:
 
 jobs:
   build_wheels:
-    name: Linux - cp*
-    runs-on: ubuntu-latest
+    name: PR - cp*, ${{ matrix.platform }}
+    runs-on: ${{ matrix.platform }}-${{ matrix.version }}
     strategy:
       fail-fast: true
       matrix:
-        platform: [ubuntu]
+        platform: [ubuntu, macos]
         version: [latest]
 
     steps:
