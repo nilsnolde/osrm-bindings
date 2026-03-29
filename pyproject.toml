@@ -36,6 +36,7 @@ wheel.packages = ["src/osrm", "src/bin"]
 
 [tool.scikit-build.cmake.define]
 OSRM_GIT_TAG = "master"
+CMAKE_BUILD_TYPE = "Release"
 
 [tool.cibuildwheel]
 archs = ["native"]
