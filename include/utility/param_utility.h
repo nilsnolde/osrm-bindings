@@ -21,10 +21,9 @@ using osrm::engine::api::TripParameters;
 
 namespace osrm_nb_util {
 
-template <typename T>
-T str_to_enum(const std::string& str,
-              const std::string& type_name,
-              const std::unordered_map<std::string, T>& enum_map) {
+template <typename T> T str_to_enum(const std::string& str,
+                                    const std::string& type_name,
+                                    const std::unordered_map<std::string, T>& enum_map) {
   auto itr = enum_map.find(str);
 
   if (itr != enum_map.end()) {
@@ -49,10 +48,9 @@ T str_to_enum(const std::string& str,
   throw std::invalid_argument("Invalid " + type_name + ": '" + str + "' " + valid_strs);
 }
 
-template <typename T>
-std::string enum_to_str(T enum_type,
-                        const std::string& type_name,
-                        const std::unordered_map<std::string, T>& enum_map) {
+template <typename T> std::string enum_to_str(T enum_type,
+                                              const std::string& type_name,
+                                              const std::unordered_map<std::string, T>& enum_map) {
   for (auto itr : enum_map) {
     if (itr.second == enum_type) {
       return itr.first;

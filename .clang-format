@@ -5,7 +5,7 @@ AccessModifierOffset: -2
 AlignAfterOpenBracket: Align
 AlignConsecutiveAssignments: false
 AlignConsecutiveDeclarations: false
-AlignEscapedNewlinesLeft: false
+AlignEscapedNewlines: Left
 AlignOperands:   true
 AlignTrailingComments: true
 AllowAllParametersOfDeclarationOnNextLine: false
@@ -14,10 +14,8 @@ AllowShortCaseLabelsOnASingleLine: false
 AllowShortFunctionsOnASingleLine: None
 AllowShortIfStatementsOnASingleLine: false
 AllowShortLoopsOnASingleLine: false
-AlwaysBreakAfterDefinitionReturnType: None
-AlwaysBreakAfterReturnType: None
 AlwaysBreakBeforeMultilineStrings: false
-AlwaysBreakTemplateDeclarations: false
+AlwaysBreakTemplateDeclarations: No
 BinPackArguments: true
 BinPackParameters: false
 BraceWrapping:
@@ -36,24 +34,24 @@ BreakBeforeBinaryOperators: None
 BreakBeforeBraces: Attach
 BreakBeforeTernaryOperators: true
 BreakConstructorInitializersBeforeComma: false
+BreakStringLiterals: false
 ColumnLimit:     102
 CommentPragmas:  '^ IWYU pragma:'
-ConstructorInitializerAllOnOneLineOrOnePerLine: false
+PackConstructorInitializers: NextLine
 ConstructorInitializerIndentWidth: 4
 ContinuationIndentWidth: 4
 Cpp11BracedListStyle: true
 DerivePointerAlignment: false
 DisableFormat:   false
-ExperimentalAutoDetectBinPacking: false
 ForEachMacros:   [ foreach, Q_FOREACH, BOOST_FOREACH ]
 IncludeBlocks: Regroup
 IncludeCategories:
   - Regex:           '^"'
     Priority:        0
     SortPriority:    1
-  - Regex:           '^<valhalla/'
+  - Regex:           '^<osrm/'
     Priority:        2
-  - Regex:           '^<(boost|protobuf|sqlite3|curl|zmq)/'
+  - Regex:           '^<(boost|nanobind)/'
     Priority:        3
   - Regex:           '^<.*\.h>'
     Priority:        3
@@ -86,15 +84,12 @@ SortIncludes:    true
 SpaceAfterCStyleCast: false
 SpaceBeforeAssignmentOperators: true
 SpaceBeforeParens: ControlStatements
-SpaceInEmptyParentheses: false
 SpacesBeforeTrailingComments: 1
 SpacesInAngles:  false
 SpacesInContainerLiterals: true
 SpacesInCStyleCastParentheses: false
-SpacesInParentheses: false
 SpacesInSquareBrackets: false
-Standard:        Cpp11
+Standard:        Latest
 TabWidth:        8
 UseTab:          Never
-BreakStringLiterals: false
 ...
