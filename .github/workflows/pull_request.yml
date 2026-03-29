@@ -48,6 +48,16 @@ jobs:
           ccache-${{ runner.os }}-${{ github.head_ref }}-
           ccache-${{ runner.os }}-
 
+    - name: Restore Conan cache
+      if: runner.os == 'Windows'
+      uses: actions/cache/restore@v5
+      with:
+        path: ~/.conan2
+        key: conan-${{ runner.os }}-${{ github.head_ref }}-${{ github.run_id }}
+        restore-keys: |
+          conan-${{ runner.os }}-${{ github.head_ref }}-
+          conan-${{ runner.os }}-
+
     - name: Run CIBuildWheel
       uses: pypa/cibuildwheel@v3.4.0
       env:
@@ -62,3 +72,10 @@ jobs:
       with:
         path: /tmp/ccache
         key: ccache-${{ runner.os }}-${{ github.head_ref }}-${{ github.run_id }}
+
+    - name: Save Conan cache
+      uses: actions/cache/save@v5
+      if: always() && runner.os == 'Windows'
+      with:
+        path: ~/.conan2
+        key: conan-${{ runner.os }}-${{ github.head_ref }}-${{ github.run_id }}
