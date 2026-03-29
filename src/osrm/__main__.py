@@ -3,12 +3,12 @@ import site
 import subprocess
 import sys
 
-if(len(sys.argv) < 2):
+if len(sys.argv) < 2:
     print("Argument not provided")
     sys.exit(1)
 
 searchpaths = site.getsitepackages()
-if(site.ENABLE_USER_SITE):
+if site.ENABLE_USER_SITE:
     searchpaths.append(site.getusersitepackages())
 
 exec = ""
@@ -23,25 +23,25 @@ if not exec:
     print("Python OSRM executables not found")
     sys.exit(1)
 
-if(sys.argv[1] == "components"):
+if sys.argv[1] == "components":
     exec += "osrm-components"
 
-elif(sys.argv[1] == "contract"):
+elif sys.argv[1] == "contract":
     exec += "osrm-contract"
 
-elif(sys.argv[1] == "customize"):
+elif sys.argv[1] == "customize":
     exec += "osrm-customize"
 
-elif(sys.argv[1] == "datastore"):
+elif sys.argv[1] == "datastore":
     exec += "osrm-datastore"
 
-elif(sys.argv[1] == "extract"):
+elif sys.argv[1] == "extract":
     exec += "osrm-extract"
 
-elif(sys.argv[1] == "partition"):
+elif sys.argv[1] == "partition":
     exec += "osrm-partition"
 
-elif(sys.argv[1] == "routed"):
+elif sys.argv[1] == "routed":
     exec += "osrm-routed"
 
 for i in range(2, len(sys.argv)):

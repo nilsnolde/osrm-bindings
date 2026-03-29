@@ -19,6 +19,14 @@ repository = "https://github.com/nilsnolde/py-osrm"
 
 [tool.ruff]
 exclude = [".venv", "build"]
+extend-exclude = [
+    "dist",
+    "wheelhouse",
+    "*build*",
+    "*.egg-info",
+]
+line-length = 105
+lint.ignore = ["E731", "F811", "E741"]
 
 [tool.scikit-build]
 minimum-version = "0.4"

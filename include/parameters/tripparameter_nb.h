@@ -16,16 +16,14 @@ NB_MAKE_OPAQUE(osrm::engine::api::TripParameters::DestinationType)
 
 void init_TripParameters(nanobind::module_& m);
 
-static const std::unordered_map<std::string, TripParameters::SourceType> source_map {
-    { "any", TripParameters::SourceType::Any },
-    { std::string(), TripParameters::SourceType::Any },
-    { "first", TripParameters::SourceType::First }
-};
+static const std::unordered_map<std::string, TripParameters::SourceType>
+    source_map{{"any", TripParameters::SourceType::Any},
+               {std::string(), TripParameters::SourceType::Any},
+               {"first", TripParameters::SourceType::First}};
 
-static const std::unordered_map<std::string, TripParameters::DestinationType> dest_map {
-    { "any", TripParameters::DestinationType::Any },
-    { std::string(), TripParameters::DestinationType::Any },
-    { "last", TripParameters::DestinationType::Last }
-};
+static const std::unordered_map<std::string, TripParameters::DestinationType>
+    dest_map{{"any", TripParameters::DestinationType::Any},
+             {std::string(), TripParameters::DestinationType::Any},
+             {"last", TripParameters::DestinationType::Last}};
 
-#endif //OSRM_NB_TRIPPARAMETER_H
+#endif // OSRM_NB_TRIPPARAMETER_H

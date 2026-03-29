@@ -5,4 +5,5 @@
 
 namespace nb = nanobind;
 
-void init_Optional(nb::module_&) {}
+void init_Optional(nb::module_&) {
+}

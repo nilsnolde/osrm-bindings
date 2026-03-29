@@ -5,4 +5,4 @@
 
 void init_Coordinate(nanobind::module_& m);
 
-#endif //OSRM_NB_COORDINATE_H
+#endif // OSRM_NB_COORDINATE_H
