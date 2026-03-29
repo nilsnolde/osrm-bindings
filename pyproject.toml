@@ -38,8 +38,8 @@ test-command = [
 ]
 
 [tool.cibuildwheel.linux]
-environment = "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib64"
-repair-wheel-command = "LD_LIBRARY_PATH=/usr/local/lib64:$LD_LIBRARY_PATH auditwheel repair -w {dest_dir} {wheel}"
+environment = "LD_LIBRARY_PATH=/usr/local/lib64:${LD_LIBRARY_PATH}"
+repair-wheel-command = "auditwheel repair -w {dest_dir} {wheel}"
 
 [tool.cibuildwheel.macos]
 environment = "MACOSX_DEPLOYMENT_TARGET=10.14"
