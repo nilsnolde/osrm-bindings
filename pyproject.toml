@@ -22,6 +22,8 @@ wheel.packages = ["src/osrm", "src/bin"]
 
 [tool.scikit-build.cmake.define]
 OSRM_GIT_TAG = "master"
+CMAKE_CXX_COMPILER_LAUNCHER = "ccache"
+CMAKE_C_COMPILER_LAUNCHER = "ccache"
 
 [tool.cibuildwheel]
 archs = ["native"]
@@ -39,6 +41,7 @@ test-command = [
 
 [tool.cibuildwheel.linux]
 environment = "LD_LIBRARY_PATH=/usr/local/lib64:${LD_LIBRARY_PATH}"
+before-build = "ccache -s && ccache -M 500M"
 repair-wheel-command = "auditwheel repair -w {dest_dir} {wheel}"
 
 [tool.cibuildwheel.macos]
