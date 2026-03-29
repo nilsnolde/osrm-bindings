@@ -20,12 +20,15 @@ build-dir = "build/{wheel_tag}"
 wheel.py-api = "cp312"
 wheel.packages = ["src/osrm", "src/bin"]
 
+[tool.scikit-build.cmake.define]
+OSRM_GIT_TAG = "master"
+
 [tool.cibuildwheel]
 archs = ["native"]
 build = "cp*"
 build-verbosity = 1
 skip = "*musllinux*"
-manylinux-x86_64-image = "ghcr.io/gis-ops/manylinux:2_28_osrm_python"
+manylinux-x86_64-image = "ghcr.io/nilsnolde/manylinux:2_28_osrm_python"
 test-requires = "pytest"
 test-command = [
   "cd {project}/tests/data",
@@ -35,39 +38,18 @@ test-command = [
 ]
 
 [tool.cibuildwheel.linux]
-environment = "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib/intel64/gcc4.8/"
-repair-wheel-command = "auditwheel repair -w {dest_dir} {wheel}"
+environment = "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib64"
+repair-wheel-command = "LD_LIBRARY_PATH=/usr/local/lib64:$LD_LIBRARY_PATH auditwheel repair -w {dest_dir} {wheel}"
 
 [tool.cibuildwheel.macos]
 environment = "MACOSX_DEPLOYMENT_TARGET=10.14"
 before-all = """
-  mkdir osrm-backend
-  tar -zxf osrm-backend.tgz -C osrm-backend
-  cd osrm-backend
-
-  cp -r include /usr/local
-  cp -r third_party/flatbuffers/include /usr/local
-  cp -r third_party/variant/include /usr/local
-  cp -r profiles /usr/local/share/osrm/
-  cd build
-  cp *.a /usr/local/lib
-  cp osrm-* /usr/local/bin
-  cp libosrm.pc /usr/local/lib/pkgconfig
-
   export HOMEBREW_NO_AUTO_UPDATE=1 HOMEBREW_NO_INSTALL_CLEANUP=1
-  brew install lua tbb boost@1.76
-  brew link boost@1.76
+  brew install lua tbb boost@1.89
+  brew link boost@1.89
 """
 
 [tool.cibuildwheel.windows]
-before-all = [
-  "tar -zxf osrm-backend.tgz",
-  "((robocopy /E /IS /NFL /NDL /NJH /NJS /NP /MOVE .conan C:\\.conan) ^& IF %ERRORLEVEL% LSS 8 SET ERRORLEVEL = 0)",
-  "((robocopy /E /IS /NFL /NDL /NJH /NJS /NP /MOVE Users C:\\Users) ^& IF %ERRORLEVEL% LSS 8 SET ERRORLEVEL = 0)",
-  "MKDIR C:\\OSRM",
-  "((robocopy /E /IS /NFL /NDL /NJH /NJS /NP /MOVE OSRM C:\\OSRM) ^& IF %ERRORLEVEL% LSS 8 SET ERRORLEVEL = 0)",
-  "((robocopy /E /IS /NFL /NDL /NJH /NJS /NP /MOVE C:\\OSRM\\lib\\pkgconfig C:\\Strawberry\\c\\lib\\pkgconfig) ^& IF %ERRORLEVEL% LSS 8 SET ERRORLEVEL = 0)"
-]
 test-command = [
   "cd /d {project}/tests/data",
   "windows-build-tests.bat",

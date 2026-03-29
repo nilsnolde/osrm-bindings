@@ -20,6 +20,8 @@ Makefile
 .ninja_log
 .ninja_deps
 
+.cache/
+
 # =========================
 # Compiled binaries
 # =========================

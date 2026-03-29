@@ -83,9 +83,10 @@ NB_MODULE(osrm_ext, m) {
             "Raises:\n\
                 RuntimeError: On invalid OSRM EngineConfig parameters."
             )
-        .def("__init__", [](OSRM* t, const std::string& storage_path) { 
+        .def("__init__", [](OSRM* t, const std::string& storage_path) {
             EngineConfig config;
             config.storage_config = osrm::storage::StorageConfig(storage_path);
+            config.use_shared_memory = false;
 
             if(!config.IsValid()) {
                 throw std::runtime_error("Required files are missing");

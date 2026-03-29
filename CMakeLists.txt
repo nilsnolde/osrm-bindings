@@ -4,7 +4,7 @@ set(PROJECT_NAME "osrm")
 set(EXT_NAME "osrm_ext")
 project(${PROJECT_NAME} LANGUAGES CXX)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
@@ -26,10 +26,12 @@ if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
 endif()
 
-find_package(Python 3.10
+find_package(Python
   REQUIRED COMPONENTS Interpreter Development.Module
   OPTIONAL_COMPONENTS Development.SABIModule
 )
+
+# find the python nanobind's cmake dir and use it
 execute_process(
   COMMAND "${Python_EXECUTABLE}" -m nanobind --cmake_dir
   OUTPUT_STRIP_TRAILING_WHITESPACE OUTPUT_VARIABLE NB_DIR
@@ -61,15 +63,15 @@ nanobind_add_module(
   ${EXT_NAME}
   STABLE_ABI
   NB_STATIC
+  LTO
   ${SRCS}
-  ${UTIL}
-  ${PARAMS}
 )
 
 target_include_directories(${EXT_NAME} 
   PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
+# use OSRM upstream's FindLibOSRM.cmake
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 find_package(LibOSRM)
 
@@ -78,6 +80,7 @@ if(LibOSRM_FOUND)
     PRIVATE
       ${LibOSRM_LIBRARIES}
       ${LibOSRM_DEPENDENT_LIBRARIES}
+      Python::SABIModule
   )
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${LibOSRM_CXXFLAGS}")
 
@@ -90,21 +93,16 @@ else()
   FetchContent_Declare(
     libosrm
     GIT_REPOSITORY https://github.com/Project-OSRM/osrm-backend
-    GIT_TAG master
+    GIT_TAG ${OSRM_GIT_TAG}
+    PATCH_COMMAND patch -p1 -N --reject-file=/dev/null -i ${CMAKE_SOURCE_DIR}/patches/sol2-lua-compat-bitlib.patch || true
   )
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-array-bounds -Wno-uninitialized -Wno-free-nonheap-object")
 
-  FetchContent_GetProperties(libosrm)
-  if(NOT libosrm_POPULATED)
-    FetchContent_Populate(libosrm)
-    set(CMAKE_INSTALL_PREFIX ${CMAKE_CURRENT_BINARY_DIR})
-    add_subdirectory(
-      ${libosrm_SOURCE_DIR}
-      ${libosrm_BINARY_DIR}
-    )
-  endif()
+  set(CMAKE_INSTALL_PREFIX ${CMAKE_CURRENT_BINARY_DIR})
+  set(FETCHCONTENT_QUIET OFF)
+  FetchContent_MakeAvailable(libosrm)
 
-  target_include_directories(${EXT_NAME} 
+  target_include_directories(${EXT_NAME}
     PUBLIC
       ${libosrm_SOURCE_DIR}/include
       ${libosrm_SOURCE_DIR}/third_party/variant/include
@@ -113,6 +111,7 @@ else()
   target_link_libraries(${EXT_NAME}
     PRIVATE
       osrm
+      Python::SABIModule
   )
 endif()
 
