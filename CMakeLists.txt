@@ -97,7 +97,9 @@ else()
     PATCH_COMMAND patch -p1 -N --reject-file=/dev/null -i ${CMAKE_SOURCE_DIR}/patches/sol2-lua-compat-bitlib.patch || true
       COMMAND patch -p1 -N --reject-file=/dev/null -i ${CMAKE_SOURCE_DIR}/patches/conan-source-dir.patch || true
   )
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-array-bounds -Wno-uninitialized -Wno-free-nonheap-object")
+  if (NOT MSVC)
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-array-bounds -Wno-uninitialized -Wno-free-nonheap-object")
+  endif()
 
   set(CMAKE_INSTALL_PREFIX ${CMAKE_CURRENT_BINARY_DIR})
   set(FETCHCONTENT_QUIET OFF)
