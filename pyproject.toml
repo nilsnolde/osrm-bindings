@@ -10,6 +10,9 @@ readme = "README.md"
 requires-python = ">=3.12"
 license = { file = "LICENSE" }
 
+[project.optional-dependencies]
+dev = ["pytest"]
+
 [project.urls]
 repository = "https://github.com/nilsnolde/py-osrm"
 "osrm-backend repository" = "https://github.com/Project-OSRM/osrm-backend"
@@ -22,8 +25,6 @@ wheel.packages = ["src/osrm", "src/bin"]
 
 [tool.scikit-build.cmake.define]
 OSRM_GIT_TAG = "master"
-CMAKE_CXX_COMPILER_LAUNCHER = "ccache"
-CMAKE_C_COMPILER_LAUNCHER = "ccache"
 
 [tool.cibuildwheel]
 archs = ["native"]
@@ -54,6 +55,8 @@ before-all = """
 """
 
 [tool.cibuildwheel.windows]
+before-build = "pip install conan==2.27.0 && conan profile detect --force"
+config-settings = "cmake.define.ENABLE_CONAN=ON"
 test-command = [
   "cd /d {project}/tests/data",
   "windows-build-tests.bat",

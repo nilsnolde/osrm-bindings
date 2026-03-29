@@ -1,0 +1,13 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index abcdef1..abcdef2 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -44,7 +44,7 @@ if (ENABLE_CONAN)
+     set(CMAKE_TOOLCHAIN_FILE "./conan_toolchain.cmake")
+
+     execute_process(
+-      COMMAND ${CONAN_EXECUTABLE} install .. --output-folder=. --build=missing --settings compiler.cppstd=20 --settings build_type=${CMAKE_BUILD_TYPE}
++      COMMAND ${CONAN_EXECUTABLE} install ${CMAKE_CURRENT_SOURCE_DIR} --output-folder=. --build=missing --settings compiler.cppstd=20 --settings build_type=${CMAKE_BUILD_TYPE}
+       WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+       OUTPUT_VARIABLE conan_stdout
+       ERROR_VARIABLE conan_stderr
