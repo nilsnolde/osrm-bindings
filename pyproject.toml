@@ -11,11 +11,14 @@ requires-python = ">=3.12"
 license = { file = "LICENSE" }
 
 [project.optional-dependencies]
-dev = ["pytest"]
+dev = ["pytest", "pre-commit", "ruff"]
 
 [project.urls]
 repository = "https://github.com/nilsnolde/py-osrm"
 "osrm-backend repository" = "https://github.com/Project-OSRM/osrm-backend"
+
+[tool.ruff]
+exclude = [".venv", "build"]
 
 [tool.scikit-build]
 minimum-version = "0.4"
