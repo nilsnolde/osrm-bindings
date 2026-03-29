@@ -18,8 +18,8 @@ jobs:
     name: Lint & Format
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-python@v5
+    - uses: actions/checkout@v6
+    - uses: actions/setup-python@v6
       with:
         python-version: '3.12'
     - uses: pre-commit/action@v3.0.1
@@ -36,11 +36,11 @@ jobs:
 
     steps:
     - name: Checkout Project
-      uses: actions/checkout@v3
+      uses: actions/checkout@v6
 
     - name: Restore ccache
       if: runner.os != 'Windows'
-      uses: actions/cache/restore@v4
+      uses: actions/cache/restore@v5
       with:
         path: /tmp/ccache
         key: ccache-${{ runner.os }}-${{ github.head_ref }}-${{ github.run_id }}
@@ -57,7 +57,7 @@ jobs:
         CIBW_CONFIG_SETTINGS_MACOS: "cmake.define.CMAKE_CXX_COMPILER_LAUNCHER=ccache cmake.define.CMAKE_C_COMPILER_LAUNCHER=ccache"
 
     - name: Save ccache
-      uses: actions/cache/save@v4
+      uses: actions/cache/save@v5
       if: always() && runner.os != 'Windows'
       with:
         path: /tmp/ccache
