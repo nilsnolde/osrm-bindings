@@ -25,7 +25,7 @@ OSRM_GIT_TAG = "master"
 
 [tool.cibuildwheel]
 archs = ["native"]
-build = "cp*"
+build = "cp312-*"
 build-verbosity = 1
 skip = "*musllinux*"
 manylinux-x86_64-image = "ghcr.io/nilsnolde/manylinux:2_28_osrm_python"
