@@ -6,6 +6,12 @@ on:
       - main
     paths-ignore:
       - '*.md'
+        
+# Cancel CI runs on a branch when new commits were pushed
+# See https://stackoverflow.com/a/72408109/2582935
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build_wheels:
@@ -22,6 +28,7 @@ jobs:
       uses: actions/checkout@v3
 
     - name: Restore ccache
+      if: runner.os != 'Windows'
       uses: actions/cache/restore@v4
       with:
         path: /tmp/ccache
@@ -38,7 +45,7 @@ jobs:
 
     - name: Save ccache
       uses: actions/cache/save@v4
-      if: always()
+      if: always() && runner.os != 'Windows'
       with:
         path: /tmp/ccache
         key: ccache-${{ runner.os }}-${{ github.head_ref }}-${{ github.run_id }}
