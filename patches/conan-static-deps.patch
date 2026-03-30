@@ -1,0 +1,13 @@
+diff --git a/conanfile.py b/conanfile.py
+index abcdef1..abcdef2 100644
+--- a/conanfile.py
++++ b/conanfile.py
+@@ -19,9 +19,6 @@ class OsrmConan(ConanFile):
+     def configure(self):
+         self.options["boost"].without_python = True
+         self.options["boost"].without_coroutine = True
+         self.options["boost"].without_stacktrace = True
+         self.options["boost"].without_cobalt = True
+-        self.options["bzip2"].shared = True
+-        self.options["hwloc"].shared = True
+-        self.options["xz-utils"].shared = True
