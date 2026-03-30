@@ -59,9 +59,9 @@ jobs:
       uses: actions/cache/restore@v5
       with:
         path: ~/.conan2
-        key: conan-${{ runner.os }}-${{ hashFiles('pyproject.toml') }}
+        key: v2-conan-${{ runner.os }}-${{ hashFiles('pyproject.toml') }}
         restore-keys: |
-          conan-${{ runner.os }}-
+          v2-conan-${{ runner.os }}-
 
     - name: Run CIBuildWheel
       uses: pypa/cibuildwheel@v3.4.0
@@ -87,7 +87,7 @@ jobs:
 
     - name: Save Conan cache
       uses: actions/cache/save@v5
-      if: always() && runner.os == 'Windows'
+      if: "!cancelled() && runner.os == 'Windows'"
       with:
         path: ~/.conan2
-        key: conan-${{ runner.os }}-${{ hashFiles('pyproject.toml') }}
+        key: v2-conan-${{ runner.os }}-${{ hashFiles('pyproject.toml') }}
