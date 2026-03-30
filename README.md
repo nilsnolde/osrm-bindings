@@ -26,11 +26,12 @@ pip install .
 
 ## OSRM Version
 
-When building from source, the OSRM upstream version is controlled by `OSRM_GIT_TAG` in `pyproject.toml`:
+When building from source, the OSRM upstream version is controlled by `OSRM_GIT_REPO` & `OSRM_GIT_TAG` in `pyproject.toml`:
 
 ```toml
 [tool.scikit-build.cmake.define]
-OSRM_GIT_TAG = "v6.0.0"
+OSRM_GIT_REPO = "https://github.com/nilsnolde/osrm-backend"
+OSRM_GIT_TAG = "de8a9da93aa09a4943d3964f0fb378a01a66af49"
 ```
 
 This accepts any git commit hash, branch name, or tag. To override it without editing the file, pass it as a config setting at install time:
@@ -38,9 +39,6 @@ This accepts any git commit hash, branch name, or tag. To override it without ed
 ```
 pip install . --config-settings cmake.define.OSRM_GIT_TAG=<commit/tag/branch>
 ```
-
-> [!NOTE]
-> Update pyproject.toml regularly to build against newest OSRM release.
 
 ## Example
 The following example will showcase the process of calculating routes between two coordinates.
@@ -69,6 +67,18 @@ print(res["routes"])
 ```
 
 ---
+
+## Type Stubs
+
+The file `src/osrm/osrm_ext.pyi` contains auto-generated type stubs for the C++ extension module. These are used by IDEs for autocompletion and by mkdocstrings to build documentation without compiling the extension.
+
+After changing C++ bindings, rebuild the project to regenerate the stubs:
+
+```
+pip install -e .
+```
+
+Then commit the updated `.pyi` file. CI will verify that committed stubs are up to date.
 
 ## Documentation
 [Documentation Page](https://gis-ops.github.io/py-osrm/)
