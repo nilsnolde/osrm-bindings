@@ -44,7 +44,9 @@ jobs:
     - name: Set up sccache dir
       if: runner.os == 'Windows'
       shell: bash
-      run: mkdir -p ~/.sccache
+      run: |
+        mkdir -p ~/.sccache
+        echo "SCCACHE_DIR=$USERPROFILE\\.sccache" >> "$GITHUB_ENV"
       
     - name: Restore sccache
       if: runner.os == 'Windows'
