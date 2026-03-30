@@ -95,9 +95,9 @@ else()
     GIT_REPOSITORY https://github.com/Project-OSRM/osrm-backend
     GIT_TAG ${OSRM_GIT_TAG}
     EXCLUDE_FROM_ALL
-    PATCH_COMMAND patch -p1 -N --reject-file=/dev/null -i ${CMAKE_SOURCE_DIR}/patches/sol2-lua-compat-bitlib.patch || true
-      COMMAND patch -p1 -N --reject-file=/dev/null -i ${CMAKE_SOURCE_DIR}/patches/conan-source-dir.patch || true
-      COMMAND patch -p1 -N --reject-file=/dev/null -i ${CMAKE_SOURCE_DIR}/patches/conan-static-deps.patch || true
+    PATCH_COMMAND git apply --ignore-whitespace ${CMAKE_SOURCE_DIR}/patches/sol2-lua-compat-bitlib.patch || true
+      COMMAND git apply --ignore-whitespace ${CMAKE_SOURCE_DIR}/patches/conan-source-dir.patch || true
+      COMMAND git apply --ignore-whitespace ${CMAKE_SOURCE_DIR}/patches/conan-static-deps.patch || true
   )
   if (NOT MSVC)
     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-array-bounds -Wno-uninitialized -Wno-free-nonheap-object")
