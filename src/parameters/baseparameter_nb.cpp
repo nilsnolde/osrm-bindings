@@ -28,7 +28,7 @@ void init_BaseParameters(nb::module_& m) {
                 exclude (list of strings): Additive list of classes to avoid. (default [])\n\
                 snapping (string 'default' | 'any'): 'default' snapping avoids is_startpoint edges, 'any' will snap to any edge in the graph. (default '')\n\n"
                          "Returns:\n\
-                __init__ (py_osrm.osrm_ext.BaseParameters): A BaseParameter object, that is the parent object to many other Parameter objects.\n\
+                __init__ (osrm.osrm_ext.BaseParameters): A BaseParameter object, that is the parent object to many other Parameter objects.\n\
                 IsValid (bool): A bool value denoting validity of parameter values.\n\n"
                          "Attributes:\n\
                 coordinates (list of floats pairs): Pairs of longitude & latitude coordinates.\n\

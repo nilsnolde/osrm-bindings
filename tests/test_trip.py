@@ -8,18 +8,18 @@ two_test_coordinates = constants.two_test_coordinates
 
 
 class TestTrip:
-    py_osrm = osrm.OSRM(storage_config=data_path, use_shared_memory=False)
+    osrm_py = osrm.OSRM(storage_config=data_path, use_shared_memory=False)
 
     def test_trip_manylocations(self):
         trip_parameters = osrm.TripParameters(coordinates=three_test_coordinates[0:5])
-        res = self.py_osrm.Trip(trip_parameters)
+        res = self.osrm_py.Trip(trip_parameters)
         for trip in res["trips"]:
             assert trip["geometry"]
 
     def test_trip_invalidargs(self):
         # Previously used osrm.OSRM() (shared memory); use file mode here
         trip_parameters = osrm.TripParameters(coordinates=two_test_coordinates)
-        res = self.py_osrm.Trip(trip_parameters)
+        res = self.osrm_py.Trip(trip_parameters)
         for trip in res["trips"]:
             assert trip["geometry"]
 
@@ -28,14 +28,14 @@ class TestTrip:
         trip_parameters = osrm.TripParameters(
             coordinates=[three_test_coordinates[0], three_test_coordinates[1]]
         )
-        res = self.py_osrm.Trip(trip_parameters)
+        res = self.osrm_py.Trip(trip_parameters)
         for trip in res["trips"]:
             assert isinstance(trip["geometry"], str)
 
     def test_trip_nogeometrycompression(self):
         # Previously used osrm.OSRM() (shared memory); use file mode here
         trip_parameters = osrm.TripParameters(coordinates=two_test_coordinates, geometries="geojson")
-        res = self.py_osrm.Trip(trip_parameters)
+        res = self.osrm_py.Trip(trip_parameters)
         for trip in res["trips"]:
             assert isinstance(trip["geometry"]["coordinates"], osrm.Array)
 
@@ -47,7 +47,7 @@ class TestTrip:
             annotations=["speed"],
             overview="false",
         )
-        res = self.py_osrm.Trip(trip_parameters)
+        res = self.osrm_py.Trip(trip_parameters)
         for trip in res["trips"]:
             assert trip
             for l in trip["legs"]:
@@ -68,7 +68,7 @@ class TestTrip:
             annotations=["duration", "distance", "nodes"],
             overview="false",
         )
-        res = self.py_osrm.Trip(trip_params)
+        res = self.osrm_py.Trip(trip_params)
         assert len(res["trips"]) == 1
         for trip in res["trips"]:
             assert trip
@@ -94,7 +94,7 @@ class TestTrip:
             annotations=["all"],
             overview="false",
         )
-        res = self.py_osrm.Trip(trip_params)
+        res = self.osrm_py.Trip(trip_params)
         assert len(res["trips"]) == 1
         for trip in res["trips"]:
             assert trip

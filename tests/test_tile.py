@@ -8,11 +8,11 @@ test_tile = constants.test_tile
 
 
 class TestTile:
-    py_osrm = osrm.OSRM(storage_config=data_path, use_shared_memory=False)
+    osrm_py = osrm.OSRM(storage_config=data_path, use_shared_memory=False)
 
     def test_tile(self):
         tile_params = osrm.TileParameters(test_tile["at"])
-        res = self.py_osrm.Tile(tile_params)
+        res = self.osrm_py.Tile(tile_params)
         assert len(res) == test_tile["size"]
 
     def test_tile_preconditions(self):
@@ -23,4 +23,4 @@ class TestTile:
             # Must be unsigned
             tile_params = osrm.TileParameters([17059, 11948, -15])
         tile_params = osrm.TileParameters([17059, 11948, 15])
-        self.py_osrm.Tile(tile_params)
+        self.osrm_py.Tile(tile_params)

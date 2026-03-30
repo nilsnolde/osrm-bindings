@@ -152,7 +152,7 @@ class BaseParameters:
                         snapping (string 'default' | 'any'): 'default' snapping avoids is_startpoint edges, 'any' will snap to any edge in the graph. (default \'\')
 
         Returns:
-                        __init__ (py_osrm.osrm_ext.BaseParameters): A BaseParameter object, that is the parent object to many other Parameter objects.
+                        __init__ (osrm_py.osrm_ext.BaseParameters): A BaseParameter object, that is the parent object to many other Parameter objects.
                         IsValid (bool): A bool value denoting validity of parameter values.
 
         Attributes:
@@ -724,8 +724,8 @@ class OSRM:
 
         Examples:
                         >>> import osrm
-                        >>> py_osrm = osrm.OSRM('.tests/test_data/ch/monaco.osrm')
-                        >>> py_osrm = osrm.OSRM(
+                        >>> osrm_py = osrm.OSRM('.tests/test_data/ch/monaco.osrm')
+                        >>> osrm_py = osrm.OSRM(
                                 algorithm = 'CH',
                                 storage_config = '.tests/test_data/ch/monaco.osrm',
                                 max_locations_trip = 3,
@@ -757,7 +757,7 @@ class OSRM:
         Matches/snaps given GPS points to the road network in the most plausible way.
 
         Examples:
-                        >>> res = py_osrm.Match(match_params)
+                        >>> res = osrm_py.Match(match_params)
 
         Args:
                         match_params (osrm.MatchParameters): MatchParameters Object.
@@ -774,7 +774,7 @@ class OSRM:
         Snaps a coordinate to the street network and returns the nearest matches.
 
         Examples:
-                        >>> res = py_osrm.Nearest(nearest_params)
+                        >>> res = osrm_py.Nearest(nearest_params)
 
         Args:
                         nearest_params (osrm.NearestParameters): NearestParameters Object.
@@ -791,7 +791,7 @@ class OSRM:
         Finds the fastest route between coordinates in the supplied order.
 
         Examples:
-                        >>> res = py_osrm.Route(route_params)
+                        >>> res = osrm_py.Route(route_params)
 
         Args:
                         route_params (osrm.RouteParameters): RouteParameters Object.
@@ -808,7 +808,7 @@ class OSRM:
         Computes the duration of the fastest route between all pairs of supplied coordinates.
 
         Examples:
-                        >>> res = py_osrm.Table(table_params)
+                        >>> res = osrm_py.Table(table_params)
 
         Args:
                         table_params (osrm.TableParameters): TableParameters Object.
@@ -825,7 +825,7 @@ class OSRM:
         Computes the duration of the fastest route between all pairs of supplied coordinates.
 
         Examples:
-                        >>> res = py_osrm.Tile(tile_params)
+                        >>> res = osrm_py.Tile(tile_params)
 
         Args:
                         tile_params (osrm.TileParameters): TileParameters Object.
@@ -842,7 +842,7 @@ class OSRM:
         Solves the Traveling Salesman Problem using a greedy heuristic (farthest-insertion algorithm).
 
         Examples:
-                        >>> res = py_osrm.Trip(trip_params)
+                        >>> res = osrm_py.Trip(trip_params)
 
         Args:
                         trip_params (osrm.TripParameters): TripParameters Object.

@@ -1,4 +1,4 @@
-site_name: py_osrm
+site_name: osrm_py
 
 theme:
   name: material

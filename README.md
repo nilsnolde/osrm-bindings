@@ -1,7 +1,7 @@
-# py-osrm
-![PUSH_CI](https://github.com/gis-ops/py-osrm/actions/workflows/push_master.yml/badge.svg)
+# osrm-py
+![PUSH_CI](https://github.com/nilsnolde/osrm-py/actions/workflows/push_master.yml/badge.svg)
 
-**py-osrm is a Python package that binds to [osrm-backend](https://github.com/Project-OSRM/osrm-backend) using [nanobind](https://github.com/wjakob/nanobind).**
+**osrm-py is a Python package that binds to [osrm-backend](https://github.com/Project-OSRM/osrm-backend) using [nanobind](https://github.com/wjakob/nanobind).**
 
 ---
 
@@ -18,7 +18,7 @@ On PyPI we only distribute `abi3` wheels for each platform, i.e. one needs at le
 
 ## Installation
 
-py-osrm is (likely, didn't check) supported from **CPython 3.10+** on, and can be installed from source via running the following command in the source folder:
+osrm-py is (likely, didn't check) supported from **CPython 3.10+** on, and can be installed from source via running the following command in the source folder:
 
 ```
 pip install .
@@ -47,19 +47,19 @@ First, import the `osrm` library, and instantiate an instance of OSRM:
 ```python
 import osrm
 
-# Instantiate py_osrm instance
-py_osrm = osrm.OSRM("./tests/test_data/ch/monaco.osrm")
+# Instantiate osrm_py instance
+osrm_py = osrm.OSRM("./tests/test_data/ch/monaco.osrm")
 ```
 
-Then, declare `RouteParameters`, and then pass it into the `py_osrm` instance:
+Then, declare `RouteParameters`, and then pass it into the `osrm_py` instance:
 ```python
 # Declare Route Parameters
 route_params = osrm.RouteParameters(
     coordinates = [(7.41337, 43.72956), (7.41546, 43.73077)]
 )
 
-# Pass it into the py_osrm instance
-res = py_osrm.Route(route_params)
+# Pass it into the osrm_py instance
+res = osrm_py.Route(route_params)
 
 # Print out result output
 print(res["waypoints"])
@@ -81,4 +81,4 @@ pip install -e .
 Then commit the updated `.pyi` file. CI will verify that committed stubs are up to date.
 
 ## Documentation
-[Documentation Page](https://gis-ops.github.io/py-osrm/)
+[Documentation Page](https://nilsnolde.github.io/osrm-py/)

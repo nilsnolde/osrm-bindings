@@ -9,14 +9,14 @@ two_test_coordinates = constants.two_test_coordinates
 
 
 class TestTable:
-    py_osrm = osrm.OSRM(storage_config=data_path, use_shared_memory=False)
+    osrm_py = osrm.OSRM(storage_config=data_path, use_shared_memory=False)
 
     def test_table_annotations(self):
         table_params = osrm.TableParameters(
             coordinates=[three_test_coordinates[0], three_test_coordinates[1]],
             annotations=["distance"],
         )
-        res = self.py_osrm.Table(table_params)
+        res = self.osrm_py.Table(table_params)
         assert res["distances"]
         assert "durations" not in res
 
@@ -24,7 +24,7 @@ class TestTable:
             coordinates=[three_test_coordinates[0], three_test_coordinates[1]],
             annotations=["duration"],
         )
-        res = self.py_osrm.Table(table_params)
+        res = self.osrm_py.Table(table_params)
         assert res["durations"]
         assert "distances" not in res
 
@@ -32,14 +32,14 @@ class TestTable:
             coordinates=[three_test_coordinates[0], three_test_coordinates[1]],
             annotations=["duration", "distance"],
         )
-        res = self.py_osrm.Table(table_params)
+        res = self.osrm_py.Table(table_params)
         assert res["durations"]
         assert res["distances"]
 
         table_params = osrm.TableParameters(
             coordinates=[three_test_coordinates[0], three_test_coordinates[1]]
         )
-        res = self.py_osrm.Table(table_params)
+        res = self.osrm_py.Table(table_params)
         assert res["durations"]
         assert "distances" not in res
 
@@ -48,7 +48,7 @@ class TestTable:
             coordinates=[three_test_coordinates[0], three_test_coordinates[1]],
             snapping="any",
         )
-        res = self.py_osrm.Table(table_params)
+        res = self.osrm_py.Table(table_params)
         assert res["durations"]
 
     # def test_table_annotation(self):
@@ -59,7 +59,7 @@ class TestTable:
     #             coordinates = [three_test_coordinates[0], three_test_coordinates[1]],
     #             annotations = [annotation]
     #         )
-    #         res = self.py_osrm.Table(table_params)
+    #         res = self.osrm_py.Table(table_params)
     #
     #         rows = res[annotation]
     #         for i, col in enumerate(res[annotation]):
@@ -81,7 +81,7 @@ class TestTable:
     #             destinations = [0,1],
     #             annotations = [annotation]
     #         )
-    #         res = self.py_osrm.Table(table_params)
+    #         res = self.osrm_py.Table(table_params)
     #
     #         rows = res[annotation]
     #         for i, col in enumerate(res[annotation]):
@@ -99,7 +99,7 @@ class TestTable:
     def test_table_withoutwaypoints(self):
         table_params = osrm.TableParameters(coordinates=two_test_coordinates, annotations=["duration"])
         table_params.skip_waypoints = True
-        res = self.py_osrm.Table(table_params)
+        res = self.osrm_py.Table(table_params)
         assert "sources" not in res
         assert "destinations" not in res
 
@@ -110,32 +110,32 @@ class TestTable:
             fallback_speed=1,
             fallback_coordinate_type="input",
         )
-        res = self.py_osrm.Table(table_params)
+        res = self.osrm_py.Table(table_params)
         assert len(res["destinations"]) == 2
         assert len(res["fallback_speed_cells"]) == 0
 
     def test_table_invalidfallbackspeeds(self):
-        py_osrm = osrm.OSRM(storage_config=mld_data_path, algorithm="MLD", use_shared_memory=False)
+        osrm_py = osrm.OSRM(storage_config=mld_data_path, algorithm="MLD", use_shared_memory=False)
         table_params = osrm.TableParameters(
             coordinates=two_test_coordinates,
             annotations=["duration"],
             fallback_speed=-1,
         )
         with pytest.raises(RuntimeError) as ex:
-            py_osrm.Table(table_params)
+            osrm_py.Table(table_params)
         assert str(ex.value) == "Invalid Table Parameters"
 
         table_params.fallback_speed = 10
-        py_osrm.Table(table_params)
+        osrm_py.Table(table_params)
 
     def test_table_invalidscalefactor(self):
-        py_osrm = osrm.OSRM(storage_config=mld_data_path, algorithm="MLD", use_shared_memory=False)
+        osrm_py = osrm.OSRM(storage_config=mld_data_path, algorithm="MLD", use_shared_memory=False)
         table_params = osrm.TableParameters(
             coordinates=two_test_coordinates, annotations=["duration"], scale_factor=-1
         )
         with pytest.raises(RuntimeError) as ex:
-            py_osrm.Table(table_params)
+            osrm_py.Table(table_params)
         assert str(ex.value) == "Invalid Table Parameters"
 
         table_params.scale_factor = 1
-        py_osrm.Table(table_params)
+        osrm_py.Table(table_params)

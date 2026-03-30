@@ -62,8 +62,8 @@ NB_MODULE(osrm_ext, m) {
       .def(nb::init<EngineConfig&>(), "Instantiates an instance of OSRM.\n\n"
                                       "Examples:\n\
                 >>> import osrm\n\
-                >>> py_osrm = osrm.OSRM('.tests/test_data/ch/monaco.osrm')\n\
-                >>> py_osrm = osrm.OSRM(\n\
+                >>> osrm_py = osrm.OSRM('.tests/test_data/ch/monaco.osrm')\n\
+                >>> osrm_py = osrm.OSRM(\n\
                         algorithm = 'CH',\n\
                         storage_config = '.tests/test_data/ch/monaco.osrm',\n\
                         max_locations_trip = 3,\n\
@@ -119,7 +119,7 @@ NB_MODULE(osrm_ext, m) {
           },
           "Matches/snaps given GPS points to the road network in the most plausible way.\n\n"
           "Examples:\n\
-                >>> res = py_osrm.Match(match_params)\n\n"
+                >>> res = osrm_py.Match(match_params)\n\n"
           "Args:\n\
                 match_params (osrm.MatchParameters): MatchParameters Object.\n\n"
           "Returns:\n\
@@ -141,7 +141,7 @@ NB_MODULE(osrm_ext, m) {
           },
           "Snaps a coordinate to the street network and returns the nearest matches.\n\n"
           "Examples:\n\
-                >>> res = py_osrm.Nearest(nearest_params)\n\n"
+                >>> res = osrm_py.Nearest(nearest_params)\n\n"
           "Args:\n\
                 nearest_params (osrm.NearestParameters): NearestParameters Object.\n\n"
           "Returns:\n\
@@ -163,7 +163,7 @@ NB_MODULE(osrm_ext, m) {
           },
           "Finds the fastest route between coordinates in the supplied order.\n\n"
           "Examples:\n\
-                >>> res = py_osrm.Route(route_params)\n\n"
+                >>> res = osrm_py.Route(route_params)\n\n"
           "Args:\n\
                 route_params (osrm.RouteParameters): RouteParameters Object.\n\n"
           "Returns:\n\
@@ -185,7 +185,7 @@ NB_MODULE(osrm_ext, m) {
           },
           "Computes the duration of the fastest route between all pairs of supplied coordinates.\n\n"
           "Examples:\n\
-                >>> res = py_osrm.Table(table_params)\n\n"
+                >>> res = osrm_py.Table(table_params)\n\n"
           "Args:\n\
                 table_params (osrm.TableParameters): TableParameters Object.\n\n"
           "Returns:\n\
@@ -207,7 +207,7 @@ NB_MODULE(osrm_ext, m) {
           },
           "Computes the duration of the fastest route between all pairs of supplied coordinates.\n\n"
           "Examples:\n\
-                >>> res = py_osrm.Tile(tile_params)\n\n"
+                >>> res = osrm_py.Tile(tile_params)\n\n"
           "Args:\n\
                 tile_params (osrm.TileParameters): TileParameters Object.\n\n"
           "Returns:\n\
@@ -229,7 +229,7 @@ NB_MODULE(osrm_ext, m) {
           },
           "Solves the Traveling Salesman Problem using a greedy heuristic (farthest-insertion algorithm).\n\n"
           "Examples:\n\
-                >>> res = py_osrm.Trip(trip_params)\n\n"
+                >>> res = osrm_py.Trip(trip_params)\n\n"
           "Args:\n\
                 trip_params (osrm.TripParameters): TripParameters Object.\n\n"
           "Returns:\n\
