@@ -91,7 +91,7 @@ jobs:
         # macOS: no container, so pass ccache as cmake compiler launcher
         CIBW_CONFIG_SETTINGS_MACOS: "cmake.define.CMAKE_CXX_COMPILER_LAUNCHER=ccache cmake.define.CMAKE_C_COMPILER_LAUNCHER=ccache"
         # Windows: use sccache (MSVC-compatible) as cmake compiler launcher
-        CIBW_CONFIG_SETTINGS_WINDOWS: "cmake.define.CMAKE_CXX_COMPILER_LAUNCHER=sccache cmake.define.CMAKE_C_COMPILER_LAUNCHER=sccache"
+        CIBW_CONFIG_SETTINGS_WINDOWS: "cmake.define.CMAKE_CXX_COMPILER_LAUNCHER=sccache cmake.define.CMAKE_C_COMPILER_LAUNCHER=sccache cmake.define.ENABLE_CONAN=ON"
         CIBW_ENVIRONMENT_WINDOWS: "SCCACHE_DIR=${USERPROFILE}\\.sccache"
         # Skip Windows tests unless explicitly enabled via workflow_dispatch
         CIBW_TEST_COMMAND_WINDOWS: ${{ inputs.test-windows == false && ' ' || '' }}
