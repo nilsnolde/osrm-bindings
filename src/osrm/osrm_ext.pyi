@@ -152,7 +152,7 @@ class BaseParameters:
                         snapping (string 'default' | 'any'): 'default' snapping avoids is_startpoint edges, 'any' will snap to any edge in the graph. (default \'\')
 
         Returns:
-                        __init__ (osrm_py.osrm_ext.BaseParameters): A BaseParameter object, that is the parent object to many other Parameter objects.
+                        __init__ (osrm.osrm_ext.BaseParameters): A BaseParameter object, that is the parent object to many other Parameter objects.
                         IsValid (bool): A bool value denoting validity of parameter values.
 
         Attributes:
