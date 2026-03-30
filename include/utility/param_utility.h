@@ -62,7 +62,7 @@ template <typename T> std::string enum_to_str(T enum_type,
 
 void assign_baseparameters(BaseParameters* params,
                            std::vector<osrm::util::Coordinate> coordinates,
-                           std::vector<std::optional<osrm::engine::Hint>> hints,
+                           std::vector<std::optional<std::string>> hints,
                            std::vector<std::optional<double>> radiuses,
                            std::vector<std::optional<osrm::engine::Bearing>> bearings,
                            const std::vector<std::optional<osrm::engine::Approach>>& approaches,

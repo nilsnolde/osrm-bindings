@@ -20,7 +20,9 @@ void init_JSONContainer(nb::module_& m) {
              return visitor.visitobject(obj);
            })
       .def("__getitem__",
-           [](json::Object& obj, const std::string& key) { return obj.values.at(key); })
+           [](json::Object& obj, const std::string& key) -> nb::object {
+             return nb::cast(obj.values.at(key));
+           })
       .def("__contains__",
            [](const json::Object& obj, const std::string& key) { return obj.values.count(key) > 0; })
       .def(
@@ -39,18 +41,18 @@ void init_JSONContainer(nb::module_& m) {
              ValueStringifyVisitor visitor;
              return visitor.visitarray(arr);
            })
-      .def("__getitem__", [](json::Array& arr, int i) { return arr.values[i]; })
-      .def(
-          "__iter__",
-          [m](const json::Array& arr) {
-            return nb::make_iterator(m, "value_iterator", arr.values.begin(), arr.values.end());
-          },
-          nb::keep_alive<0, 1>());
+      .def("__getitem__",
+           [](json::Array& arr, int i) -> nb::object { return nb::cast(arr.values[i]); })
+      .def("__iter__", [](const json::Array& arr) {
+        nb::list items;
+        for (const auto& v : arr.values) {
+          items.append(nb::cast(v));
+        }
+        return nb::iter(items);
+      });
 
   nb::class_<json::String>(m, "String").def(nb::init<std::string>());
   nb::class_<json::Number>(m, "Number").def(nb::init<double>());
 
-  nb::class_<json::True>(m, "True").def(nb::init<>());
-  nb::class_<json::False>(m, "False").def(nb::init<>());
-  nb::class_<json::Null>(m, "Null").def(nb::init<>());
+  // Not exposed: json::True, json::False, json::Null — they shadow Python builtins
 }

@@ -3,6 +3,7 @@
 #include "utility/param_utility.h"
 
 #include <nanobind/nanobind.h>
+#include <nanobind/stl/string.h>
 
 NB_MAKE_OPAQUE(osrm::engine::Approach)
 

@@ -1,5 +1,6 @@
 #include "parameters/baseparameter_nb.h"
 #include "engine/api/base_parameters.hpp"
+#include "engine/hint.hpp"
 #include "utility/param_utility.h"
 
 #include <nanobind/nanobind.h>
@@ -41,7 +42,29 @@ void init_BaseParameters(nb::module_& m) {
                 skip_waypoints (list): Removes waypoints from the response.\n\
                 snapping (string): 'default' snapping avoids is_startpoint edges, 'any' will snap to any edge in the graph.")
       .def_rw("coordinates", &BaseParameters::coordinates)
-      .def_rw("hints", &BaseParameters::hints)
+      .def_prop_rw(
+          "hints",
+          [](const BaseParameters& p) {
+            nb::list result;
+            for (const auto& h : p.hints) {
+              if (h) {
+                result.append(h->ToBase64());
+              } else {
+                result.append(nb::none());
+              }
+            }
+            return result;
+          },
+          [](BaseParameters& p, const nb::list& hints) {
+            p.hints.clear();
+            for (auto item : hints) {
+              if (item.is_none()) {
+                p.hints.push_back(std::nullopt);
+              } else {
+                p.hints.push_back(osrm::engine::Hint::FromBase64(nb::cast<std::string>(item)));
+              }
+            }
+          })
       .def_rw("radiuses", &BaseParameters::radiuses)
       .def_rw("bearings", &BaseParameters::bearings)
       .def_rw("approaches", &BaseParameters::approaches)

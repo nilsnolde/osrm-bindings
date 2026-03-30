@@ -5,6 +5,7 @@
 #include "engine/api/table_parameters.hpp"
 #include "engine/api/trip_parameters.hpp"
 #include "engine/approach.hpp"
+#include "engine/hint.hpp"
 
 #include <optional>
 #include <string>
@@ -22,7 +23,7 @@ namespace osrm_nb_util {
 
 void assign_baseparameters(BaseParameters* params,
                            std::vector<osrm::util::Coordinate> coordinates,
-                           std::vector<std::optional<osrm::engine::Hint>> hints,
+                           std::vector<std::optional<std::string>> hints,
                            std::vector<std::optional<double>> radiuses,
                            std::vector<std::optional<osrm::engine::Bearing>> bearings,
                            const std::vector<std::optional<osrm::engine::Approach>>& approaches,
@@ -30,7 +31,14 @@ void assign_baseparameters(BaseParameters* params,
                            std::vector<std::string> exclude,
                            const BaseParameters::SnappingType snapping) {
   params->coordinates = std::move(coordinates);
-  params->hints = std::move(hints);
+  params->hints.clear();
+  for (const auto& h : hints) {
+    if (h) {
+      params->hints.push_back(osrm::engine::Hint::FromBase64(*h));
+    } else {
+      params->hints.push_back(std::nullopt);
+    }
+  }
   params->radiuses = std::move(radiuses);
   params->bearings = std::move(bearings);
   params->approaches = approaches;

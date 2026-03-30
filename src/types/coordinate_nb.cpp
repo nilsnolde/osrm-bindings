@@ -4,6 +4,7 @@
 #include <nanobind/nanobind.h>
 #include <nanobind/operators.h>
 #include <nanobind/stl/pair.h>
+#include <nanobind/stl/string.h>
 
 #include <string>
 
@@ -27,8 +28,18 @@ void init_Coordinate(nb::module_& m) {
 
              new (t) Coordinate(lon_, lat_);
            })
-      .def_rw("lon", &Coordinate::lon)
-      .def_rw("lat", &Coordinate::lat)
+      .def_prop_rw(
+          "lon",
+          [](const Coordinate& c) {
+            return static_cast<double>(static_cast<int>(c.lon)) / osrm::COORDINATE_PRECISION;
+          },
+          [](Coordinate& c, double val) { c.lon = osrm::util::toFixed(FloatLongitude{val}); })
+      .def_prop_rw(
+          "lat",
+          [](const Coordinate& c) {
+            return static_cast<double>(static_cast<int>(c.lat)) / osrm::COORDINATE_PRECISION;
+          },
+          [](Coordinate& c, double val) { c.lat = osrm::util::toFixed(FloatLatitude{val}); })
       .def("IsValid", &Coordinate::IsValid)
       .def("__repr__",
            [](const Coordinate& coord) {

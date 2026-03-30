@@ -44,6 +44,9 @@ jobs:
     - name: Checkout Project
       uses: actions/checkout@v6
 
+    # ccache for Linux/macOS: mount host cache dir into the manylinux container via docker volume.
+    # The manylinux image already has ccache configured as a compiler wrapper, so no CMAKE_*_COMPILER_LAUNCHER needed for Linux.
+    # macOS uses CMAKE_*_COMPILER_LAUNCHER=ccache explicitly since there's no container.
     - name: Restore ccache
       if: runner.os != 'Windows'
       uses: actions/cache/restore@v5
@@ -54,6 +57,8 @@ jobs:
           ccache-${{ runner.os }}-${{ github.head_ref }}-
           ccache-${{ runner.os }}-
 
+    # sccache for Windows: like ccache but supports MSVC. No container on Windows,
+    # so sccache runs directly on the runner.
     - name: Restore sccache
       if: runner.os == 'Windows'
       uses: actions/cache/restore@v5
@@ -64,6 +69,9 @@ jobs:
           sccache-${{ runner.os }}-${{ github.head_ref }}-
           sccache-${{ runner.os }}-
 
+    # Conan package manager cache (Windows only — Linux/macOS use system packages or the manylinux image).
+    # Keyed on pyproject.toml hash since it contains OSRM_GIT_TAG which determines which conanfile is used.
+    # Uses !cancelled() for save to avoid caching partial downloads from cancelled runs.
     - name: Restore Conan cache
       if: runner.os == 'Windows'
       uses: actions/cache/restore@v5
@@ -76,11 +84,16 @@ jobs:
     - name: Run CIBuildWheel
       uses: pypa/cibuildwheel@v3.4.0
       env:
+        # Mount host ccache dir into manylinux container
         CIBW_CONTAINER_ENGINE: "docker; create_args: --volume /tmp/ccache:/ccache"
+        # Set ccache dir inside container to the mounted volume
         CIBW_ENVIRONMENT_LINUX: "LD_LIBRARY_PATH=/usr/local/lib64:${LD_LIBRARY_PATH} CCACHE_DIR=/ccache"
+        # macOS: no container, so pass ccache as cmake compiler launcher
         CIBW_CONFIG_SETTINGS_MACOS: "cmake.define.CMAKE_CXX_COMPILER_LAUNCHER=ccache cmake.define.CMAKE_C_COMPILER_LAUNCHER=ccache"
+        # Windows: use sccache (MSVC-compatible) as cmake compiler launcher
         CIBW_CONFIG_SETTINGS_WINDOWS: "cmake.define.CMAKE_CXX_COMPILER_LAUNCHER=sccache cmake.define.CMAKE_C_COMPILER_LAUNCHER=sccache"
         CIBW_ENVIRONMENT_WINDOWS: "SCCACHE_DIR=${USERPROFILE}\\.sccache"
+        # Skip Windows tests unless explicitly enabled via workflow_dispatch
         CIBW_TEST_COMMAND_WINDOWS: ${{ inputs.test-windows == false && ' ' || '' }}
 
     - name: Upload wheels
@@ -103,9 +116,33 @@ jobs:
         path: ${{ env.USERPROFILE }}\.sccache
         key: sccache-${{ runner.os }}-${{ github.head_ref }}-${{ github.run_id }}
 
+    # Don't save conan cache on cancellation to avoid caching partial/corrupted downloads
     - name: Save Conan cache
       uses: actions/cache/save@v5
       if: "!cancelled() && runner.os == 'Windows'"
       with:
         path: ~/.conan2
         key: v2-conan-${{ runner.os }}-${{ hashFiles('pyproject.toml') }}
+
+  # Verify that committed .pyi stubs match the actual C++ bindings.
+  # Installs the Linux wheel, regenerates stubs via nanobind, and diffs against the repo.
+  check_stubs:
+    name: Check stubs are up to date
+    needs: [build_wheels]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v6
+    - uses: actions/setup-python@v6
+      with:
+        python-version: '3.12'
+    - uses: actions/download-artifact@v4
+      with:
+        name: wheels-ubuntu
+        path: wheelhouse
+    - name: Install wheel and regenerate stubs
+      run: |
+        pip install nanobind
+        pip install wheelhouse/*.whl
+        python -m nanobind.stubgen -m osrm_ext -o src/osrm/osrm_ext.pyi
+    - name: Check for differences
+      run: git diff --exit-code src/osrm/osrm_ext.pyi || (echo "::error::Stubs are out of date. Rebuild locally and commit the updated .pyi file." && exit 1)

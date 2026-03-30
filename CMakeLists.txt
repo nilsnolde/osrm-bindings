@@ -99,6 +99,7 @@ else()
       COMMAND git apply --ignore-whitespace ${CMAKE_SOURCE_DIR}/patches/conan-source-dir.patch || true
       COMMAND git apply --ignore-whitespace ${CMAKE_SOURCE_DIR}/patches/conan-static-deps.patch || true
   )
+  # Suppress GCC/Clang warnings from OSRM code (not valid for MSVC)
   if (NOT MSVC)
     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-array-bounds -Wno-uninitialized -Wno-free-nonheap-object")
   endif()
@@ -119,7 +120,8 @@ else()
       Python::SABIModule
   )
 
-  # EXCLUDE_FROM_ALL means these targets won't build unless something depends on them
+  # EXCLUDE_FROM_ALL skips OSRM's install rules, so these targets won't build
+  # unless explicitly depended on. We need the executables and profiles in the wheel.
   set(OSRM_EXECUTABLES osrm-extract osrm-contract osrm-customize osrm-partition osrm-datastore osrm-routed osrm-components)
   add_dependencies(${EXT_NAME} ${OSRM_EXECUTABLES})
   install(TARGETS ${OSRM_EXECUTABLES} DESTINATION bin)
@@ -131,3 +133,15 @@ if (MSVC)
 endif()
 
 install(TARGETS ${EXT_NAME} LIBRARY DESTINATION ${PROJECT_NAME})
+
+# Generate Python type stubs (.pyi) from the compiled extension module.
+# Stubs are written to the source tree so they can be committed and used by
+# mkdocstrings to build docs without compiling the extension.
+# CI verifies committed stubs are up to date (see check_stubs job).
+nanobind_add_stub(
+  ${EXT_NAME}_stub
+  MODULE osrm_ext
+  OUTPUT ${PROJECT_SOURCE_DIR}/src/osrm/osrm_ext.pyi
+  PYTHON_PATH $<TARGET_FILE_DIR:${EXT_NAME}>
+  DEPENDS ${EXT_NAME}
+)

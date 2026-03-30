@@ -6,6 +6,8 @@
 #include <nanobind/nanobind.h>
 #include <nanobind/stl/string.h>
 
+#include <filesystem>
+
 NB_MAKE_OPAQUE(osrm::engine::EngineConfig::Algorithm)
 
 namespace nb = nanobind;
@@ -39,7 +41,9 @@ void init_EngineConfig(nb::module_& m) {
       .def_rw("default_radius", &EngineConfig::default_radius)
       .def_rw("max_alternatives", &EngineConfig::max_alternatives)
       .def_rw("use_shared_memory", &EngineConfig::use_shared_memory)
-      .def_rw("memory_file", &EngineConfig::memory_file)
+      .def_prop_rw(
+          "memory_file", [](const EngineConfig& c) { return c.memory_file.string(); },
+          [](EngineConfig& c, const std::string& val) { c.memory_file = std::filesystem::path(val); })
       .def_rw("use_mmap", &EngineConfig::use_mmap)
       .def_rw("algorithm", &EngineConfig::algorithm)
       .def_rw("verbosity", &EngineConfig::verbosity)

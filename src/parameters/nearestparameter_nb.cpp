@@ -35,7 +35,7 @@ void init_NearestParameters(nb::module_& m) {
       .def(
           "__init__",
           [](NearestParameters* t, std::vector<osrm::util::Coordinate> coordinates,
-             std::vector<std::optional<osrm::engine::Hint>> hints,
+             std::vector<std::optional<std::string>> hints,
              std::vector<std::optional<double>> radiuses,
              std::vector<std::optional<osrm::engine::Bearing>> bearings,
              const std::vector<std::optional<osrm::engine::Approach>>& approaches,
@@ -47,7 +47,7 @@ void init_NearestParameters(nb::module_& m) {
                                                 generate_hints, exclude, snapping);
           },
           "coordinates"_a = std::vector<osrm::util::Coordinate>(),
-          "hints"_a = std::vector<std::optional<osrm::engine::Hint>>(),
+          "hints"_a = std::vector<std::optional<std::string>>(),
           "radiuses"_a = std::vector<std::optional<double>>(),
           "bearings"_a = std::vector<std::optional<osrm::engine::Bearing>>(),
           "approaches"_a = std::vector<std::string*>(), "generate_hints"_a = true,

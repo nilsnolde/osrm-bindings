@@ -8,7 +8,8 @@ plugins:
   - mkdocstrings:
       handlers:
         python:
-          options: 
+          paths: ["../src"]
+          options:
             docstring_style: google
             merge_init_into_class: true
             show_root_full_path: false
