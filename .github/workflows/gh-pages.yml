@@ -12,23 +12,16 @@ jobs:
 
     steps:
       - name: Checkout Project
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
 
       - name: Set up Python 3
-        uses: actions/setup-python@v4
-      
-      - name: Install osrm-backend dependencies
-        run: |
-          sudo apt install libtbb-dev
-          sudo apt install liblua5.2-dev
-          sudo apt install libboost1.74-all-dev
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
 
-      - name: Install py-osrm and doc dependencies
-        run: |
-          pip install .
-          pip install -r docs/requirements.txt
+      - name: Install doc dependencies
+        run: pip install -r docs/requirements.txt
 
       - name: Build and deploy to GitHub Pages
         working-directory: docs
-        run: |
-          mkdocs gh-deploy --force
+        run: mkdocs gh-deploy --force

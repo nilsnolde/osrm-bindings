@@ -41,7 +41,7 @@ jobs:
       if: runner.os == 'Windows'
       uses: actions/cache/restore@v5
       with:
-        path: ${{ env.USERPROFILE }}\.sccache
+        path: ~/.sccache
         key: sccache-${{ runner.os }}-${{ github.ref_name }}-${{ github.run_id }}
         restore-keys: |
           sccache-${{ runner.os }}-${{ github.ref_name }}-
@@ -76,7 +76,7 @@ jobs:
       uses: actions/cache/save@v5
       if: always() && runner.os == 'Windows'
       with:
-        path: ${{ env.USERPROFILE }}\.sccache
+        path: ~/.sccache
         key: sccache-${{ runner.os }}-${{ github.ref_name }}-${{ github.run_id }}
 
     - name: Save Conan cache

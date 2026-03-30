@@ -63,7 +63,7 @@ jobs:
       if: runner.os == 'Windows'
       uses: actions/cache/restore@v5
       with:
-        path: ${{ env.USERPROFILE }}\.sccache
+        path: ~/.sccache
         key: sccache-${{ runner.os }}-${{ github.head_ref }}-${{ github.run_id }}
         restore-keys: |
           sccache-${{ runner.os }}-${{ github.head_ref }}-
@@ -113,7 +113,7 @@ jobs:
       uses: actions/cache/save@v5
       if: always() && runner.os == 'Windows'
       with:
-        path: ${{ env.USERPROFILE }}\.sccache
+        path: ~/.sccache
         key: sccache-${{ runner.os }}-${{ github.head_ref }}-${{ github.run_id }}
 
     # Don't save conan cache on cancellation to avoid caching partial/corrupted downloads
