@@ -12,7 +12,6 @@ Platform | Arch
 Linux | x86_64
 MacOS | x86_64
 Windows | x86_64
----
 
 On PyPI we only distribute `abi3` wheels for each platform, i.e. one needs at least Python 3.12 to install the wheels. Of course it'll fall back to attempt an installation from source.
 
@@ -65,8 +64,6 @@ res = osrm_py.Route(route_params)
 print(res["waypoints"])
 print(res["routes"])
 ```
-
----
 
 ## Type Stubs
 
