@@ -6,6 +6,12 @@ on:
       - main
     paths-ignore:
       - '*.md'
+  workflow_dispatch:
+    inputs:
+      test-windows:
+        description: 'Run tests on Windows'
+        type: boolean
+        default: false
         
 # Cancel CI runs on a branch when new commits were pushed
 # See https://stackoverflow.com/a/72408109/2582935
@@ -64,6 +70,13 @@ jobs:
         CIBW_ENVIRONMENT_LINUX: "LD_LIBRARY_PATH=/usr/local/lib64:${LD_LIBRARY_PATH} CCACHE_DIR=/ccache"
         CIBW_CONFIG_SETTINGS_LINUX: "cmake.define.CMAKE_CXX_COMPILER_LAUNCHER=ccache cmake.define.CMAKE_C_COMPILER_LAUNCHER=ccache"
         CIBW_CONFIG_SETTINGS_MACOS: "cmake.define.CMAKE_CXX_COMPILER_LAUNCHER=ccache cmake.define.CMAKE_C_COMPILER_LAUNCHER=ccache"
+        CIBW_TEST_COMMAND_WINDOWS: ${{ inputs.test-windows == false && ' ' || '' }}
+
+    - name: Upload wheels
+      uses: actions/upload-artifact@v4
+      with:
+        name: wheels-${{ matrix.platform }}
+        path: wheelhouse/*.whl
 
     - name: Save ccache
       uses: actions/cache/save@v5
