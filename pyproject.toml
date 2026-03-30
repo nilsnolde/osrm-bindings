@@ -1,5 +1,10 @@
 [build-system]
-requires = ["scikit-build-core >=0.11.0", "nanobind >=2.9.0"]
+requires = [
+  "scikit-build-core >=0.12.0",
+  "nanobind >=2.12.0",
+  "cmake",
+  "ninja",
+]
 build-backend = "scikit_build_core.build"
 
 [project]
@@ -34,6 +39,8 @@ build-dir = "build/{wheel_tag}"
 cmake.build-type = "Release"
 wheel.py-api = "cp312"
 wheel.packages = ["src/osrm", "src/bin"]
+sdist.include = ["pyproject.toml"]
+sdist.exclude = ["tests", "dist", "wheelhouse"]
 
 [tool.scikit-build.cmake.define]
 OSRM_GIT_TAG = "master"

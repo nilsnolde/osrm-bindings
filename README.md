@@ -5,7 +5,8 @@
 
 ---
 
-## Supported Platforms
+## PyPI Supported Platforms
+
 Platform | Arch
 ---|---
 Linux | x86_64
@@ -13,8 +14,12 @@ MacOS | x86_64
 Windows | x86_64
 ---
 
+On PyPI we only distribute `abi3` wheels for each platform, i.e. one needs at least Python 3.12 to install them the wheels.
+
 ## Installation
-py-osrm is supported on **CPython 3.10+**, and can be installed from source via running the following command in the source folder:
+
+py-osrm is (likely, didn't check) supported from **CPython 3.10+** on, and can be installed from source via running the following command in the source folder:
+
 ```
 pip install .
 ```
