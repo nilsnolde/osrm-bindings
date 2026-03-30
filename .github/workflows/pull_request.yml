@@ -54,6 +54,16 @@ jobs:
           ccache-${{ runner.os }}-${{ github.head_ref }}-
           ccache-${{ runner.os }}-
 
+    - name: Restore sccache
+      if: runner.os == 'Windows'
+      uses: actions/cache/restore@v5
+      with:
+        path: ${{ env.USERPROFILE }}\.sccache
+        key: sccache-${{ runner.os }}-${{ github.head_ref }}-${{ github.run_id }}
+        restore-keys: |
+          sccache-${{ runner.os }}-${{ github.head_ref }}-
+          sccache-${{ runner.os }}-
+
     - name: Restore Conan cache
       if: runner.os == 'Windows'
       uses: actions/cache/restore@v5
@@ -70,6 +80,8 @@ jobs:
         CIBW_ENVIRONMENT_LINUX: "LD_LIBRARY_PATH=/usr/local/lib64:${LD_LIBRARY_PATH} CCACHE_DIR=/ccache"
         CIBW_CONFIG_SETTINGS_LINUX: "cmake.define.CMAKE_CXX_COMPILER_LAUNCHER=ccache cmake.define.CMAKE_C_COMPILER_LAUNCHER=ccache"
         CIBW_CONFIG_SETTINGS_MACOS: "cmake.define.CMAKE_CXX_COMPILER_LAUNCHER=ccache cmake.define.CMAKE_C_COMPILER_LAUNCHER=ccache"
+        CIBW_CONFIG_SETTINGS_WINDOWS: "cmake.define.CMAKE_CXX_COMPILER_LAUNCHER=sccache cmake.define.CMAKE_C_COMPILER_LAUNCHER=sccache"
+        CIBW_ENVIRONMENT_WINDOWS: "SCCACHE_DIR=${USERPROFILE}\\.sccache"
         CIBW_TEST_COMMAND_WINDOWS: ${{ inputs.test-windows == false && ' ' || '' }}
 
     - name: Upload wheels
@@ -84,6 +96,13 @@ jobs:
       with:
         path: /tmp/ccache
         key: ccache-${{ runner.os }}-${{ github.head_ref }}-${{ github.run_id }}
+
+    - name: Save sccache
+      uses: actions/cache/save@v5
+      if: always() && runner.os == 'Windows'
+      with:
+        path: ${{ env.USERPROFILE }}\.sccache
+        key: sccache-${{ runner.os }}-${{ github.head_ref }}-${{ github.run_id }}
 
     - name: Save Conan cache
       uses: actions/cache/save@v5

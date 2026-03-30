@@ -6,6 +6,12 @@ on:
       - main
     paths-ignore:
       - '*.md'
+        
+# Cancel CI runs on a branch when new commits were pushed
+# See https://stackoverflow.com/a/72408109/2582935
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build_wheels:
@@ -31,6 +37,16 @@ jobs:
           ccache-${{ runner.os }}-${{ github.ref_name }}-
           ccache-${{ runner.os }}-
 
+    - name: Restore sccache
+      if: runner.os == 'Windows'
+      uses: actions/cache/restore@v5
+      with:
+        path: ${{ env.USERPROFILE }}\.sccache
+        key: sccache-${{ runner.os }}-${{ github.ref_name }}-${{ github.run_id }}
+        restore-keys: |
+          sccache-${{ runner.os }}-${{ github.ref_name }}-
+          sccache-${{ runner.os }}-
+
     - name: Restore Conan cache
       if: runner.os == 'Windows'
       uses: actions/cache/restore@v5
@@ -47,6 +63,8 @@ jobs:
         CIBW_ENVIRONMENT_LINUX: "LD_LIBRARY_PATH=/usr/local/lib64:${LD_LIBRARY_PATH} CCACHE_DIR=/ccache"
         CIBW_CONFIG_SETTINGS_LINUX: "cmake.define.CMAKE_CXX_COMPILER_LAUNCHER=ccache cmake.define.CMAKE_C_COMPILER_LAUNCHER=ccache"
         CIBW_CONFIG_SETTINGS_MACOS: "cmake.define.CMAKE_CXX_COMPILER_LAUNCHER=ccache cmake.define.CMAKE_C_COMPILER_LAUNCHER=ccache"
+        CIBW_CONFIG_SETTINGS_WINDOWS: "cmake.define.CMAKE_CXX_COMPILER_LAUNCHER=sccache cmake.define.CMAKE_C_COMPILER_LAUNCHER=sccache"
+        CIBW_ENVIRONMENT_WINDOWS: "SCCACHE_DIR=${USERPROFILE}\\.sccache"
 
     - name: Upload wheels
       uses: actions/upload-artifact@v4
@@ -60,6 +78,13 @@ jobs:
       with:
         path: /tmp/ccache
         key: ccache-${{ runner.os }}-${{ github.ref_name }}-${{ github.run_id }}
+
+    - name: Save sccache
+      uses: actions/cache/save@v5
+      if: always() && runner.os == 'Windows'
+      with:
+        path: ${{ env.USERPROFILE }}\.sccache
+        key: sccache-${{ runner.os }}-${{ github.ref_name }}-${{ github.run_id }}
 
     - name: Save Conan cache
       uses: actions/cache/save@v5

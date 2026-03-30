@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.18)
+cmake_minimum_required(VERSION 3.28)
 
 set(PROJECT_NAME "osrm")
 set(EXT_NAME "osrm_ext")
@@ -94,6 +94,7 @@ else()
     libosrm
     GIT_REPOSITORY https://github.com/Project-OSRM/osrm-backend
     GIT_TAG ${OSRM_GIT_TAG}
+    EXCLUDE_FROM_ALL
     PATCH_COMMAND patch -p1 -N --reject-file=/dev/null -i ${CMAKE_SOURCE_DIR}/patches/sol2-lua-compat-bitlib.patch || true
       COMMAND patch -p1 -N --reject-file=/dev/null -i ${CMAKE_SOURCE_DIR}/patches/conan-source-dir.patch || true
       COMMAND patch -p1 -N --reject-file=/dev/null -i ${CMAKE_SOURCE_DIR}/patches/conan-static-deps.patch || true
