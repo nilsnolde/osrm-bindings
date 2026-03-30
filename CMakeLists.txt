@@ -105,6 +105,10 @@ else()
 
   set(CMAKE_INSTALL_PREFIX ${CMAKE_CURRENT_BINARY_DIR})
   set(FETCHCONTENT_QUIET OFF)
+  # Ensure ENABLE_CONAN is forwarded to OSRM's CMakeLists.txt (Windows conan builds)
+  if(ENABLE_CONAN)
+    set(ENABLE_CONAN ON CACHE BOOL "" FORCE)
+  endif()
   FetchContent_MakeAvailable(libosrm)
 
   target_include_directories(${EXT_NAME}
