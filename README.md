@@ -14,7 +14,7 @@ MacOS | x86_64
 Windows | x86_64
 ---
 
-On PyPI we only distribute `abi3` wheels for each platform, i.e. one needs at least Python 3.12 to install them the wheels.
+On PyPI we only distribute `abi3` wheels for each platform, i.e. one needs at least Python 3.12 to install the wheels. Of course it'll fall back to attempt an installation from source.
 
 ## Installation
 

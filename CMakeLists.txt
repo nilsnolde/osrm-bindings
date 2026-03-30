@@ -119,9 +119,10 @@ else()
       Python::SABIModule
   )
 
-  # Install OSRM executables and profiles (EXCLUDE_FROM_ALL skips OSRM's own install rules)
-  install(TARGETS osrm-extract osrm-contract osrm-customize osrm-partition osrm-datastore osrm-routed osrm-components
-          DESTINATION bin)
+  # EXCLUDE_FROM_ALL means these targets won't build unless something depends on them
+  set(OSRM_EXECUTABLES osrm-extract osrm-contract osrm-customize osrm-partition osrm-datastore osrm-routed osrm-components)
+  add_dependencies(${EXT_NAME} ${OSRM_EXECUTABLES})
+  install(TARGETS ${OSRM_EXECUTABLES} DESTINATION bin)
   install(DIRECTORY ${libosrm_SOURCE_DIR}/profiles DESTINATION share/osrm)
 endif()
 
