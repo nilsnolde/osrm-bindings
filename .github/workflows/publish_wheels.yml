@@ -2,6 +2,11 @@ name: Publish Wheels
 
 on:
   workflow_dispatch:
+    inputs:
+      upload:
+        description: 'Upload to TestPyPI'
+        type: boolean
+        default: false
   push:
     branches-ignore:
       - '*'
@@ -21,18 +26,60 @@ jobs:
     steps:
     - name: Checkout Project
       uses: actions/checkout@v6
+      with:
+        fetch-depth: 0
+
+    # Restore compiler caches from main branch
+    - name: Restore ccache
+      if: runner.os != 'Windows'
+      uses: actions/cache/restore@v5
+      with:
+        path: /tmp/ccache
+        key: ccache-${{ runner.os }}-main-
+        restore-keys: |
+          ccache-${{ runner.os }}-
+
+    - name: Set up sccache dir
+      if: runner.os == 'Windows'
+      shell: bash
+      run: mkdir -p ~/.sccache
+      
+    - name: Restore sccache
+      if: runner.os == 'Windows'
+      uses: actions/cache/restore@v5
+      with:
+        path: ~/.sccache
+        key: sccache-${{ runner.os }}-main-
+        restore-keys: |
+          sccache-${{ runner.os }}-
+
+    - name: Restore Conan cache
+      if: runner.os == 'Windows'
+      uses: actions/cache/restore@v5
+      with:
+        path: ~/.conan2
+        key: v4-conan-${{ runner.os }}-${{ hashFiles('pyproject.toml') }}
+        restore-keys: |
+          v4-conan-${{ runner.os }}-
 
     - name: Run CIBuildWheel
       uses: pypa/cibuildwheel@v3.4.0
+      env:
+        CIBW_CONTAINER_ENGINE: "docker; create_args: --volume /tmp/ccache:/ccache"
+        CIBW_ENVIRONMENT_LINUX: "LD_LIBRARY_PATH=/usr/local/lib64:${LD_LIBRARY_PATH} CCACHE_DIR=/ccache"
+        CIBW_CONFIG_SETTINGS_MACOS: "cmake.define.CMAKE_CXX_COMPILER_LAUNCHER=ccache cmake.define.CMAKE_C_COMPILER_LAUNCHER=ccache"
+        CIBW_CONFIG_SETTINGS_WINDOWS: "cmake.define.CMAKE_CXX_COMPILER_LAUNCHER=sccache cmake.define.CMAKE_C_COMPILER_LAUNCHER=sccache cmake.define.ENABLE_CONAN=ON"
+        CIBW_ENVIRONMENT_WINDOWS: "SCCACHE_DIR=${USERPROFILE}\\.sccache"
 
     - name: Upload Wheels
       uses: actions/upload-artifact@v4
       with:
+        name: wheels-${{ matrix.platform }}
         path: wheelhouse/*.whl
 
   upload_all:
     name: Upload if Release
-    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
+    if: startsWith(github.ref, 'refs/tags') || inputs.upload == true
     needs: [build_wheels]
     runs-on: ubuntu-latest
     permissions:

@@ -41,6 +41,7 @@ jobs:
       if: runner.os == 'Windows'
       shell: bash
       run: mkdir -p ~/.sccache
+      
     - name: Restore sccache
       if: runner.os == 'Windows'
       uses: actions/cache/restore@v5
