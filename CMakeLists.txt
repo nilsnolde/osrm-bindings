@@ -92,12 +92,11 @@ else()
   include(FetchContent)
   FetchContent_Declare(
     libosrm
-    GIT_REPOSITORY https://github.com/Project-OSRM/osrm-backend
+    GIT_REPOSITORY ${OSRM_GIT_REPO}
     GIT_TAG ${OSRM_GIT_TAG}
     EXCLUDE_FROM_ALL
-    PATCH_COMMAND ${CMAKE_COMMAND} -E env git apply --ignore-whitespace ${CMAKE_SOURCE_DIR}/patches/sol2-lua-compat-bitlib.patch
-      COMMAND ${CMAKE_COMMAND} -E env git apply --ignore-whitespace ${CMAKE_SOURCE_DIR}/patches/conan-source-dir.patch
-      COMMAND ${CMAKE_COMMAND} -E env git apply --ignore-whitespace ${CMAKE_SOURCE_DIR}/patches/conan-static-deps.patch
+    # Make all conan deps static for self-contained wheels (not appropriate for upstream OSRM)
+    PATCH_COMMAND patch -p1 -N -i ${CMAKE_SOURCE_DIR}/patches/conan-static-deps.patch
   )
   # Suppress GCC/Clang warnings from OSRM code (not valid for MSVC)
   if (NOT MSVC)
