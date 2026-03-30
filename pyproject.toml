@@ -45,6 +45,7 @@ sdist.exclude = ["tests", "dist", "wheelhouse"]
 [tool.scikit-build.cmake.define]
 OSRM_GIT_TAG = "master"
 CMAKE_BUILD_TYPE = "Release"
+CMAKE_CXX_SCAN_FOR_MODULES = "OFF"
 
 [tool.cibuildwheel]
 archs = ["native"]
