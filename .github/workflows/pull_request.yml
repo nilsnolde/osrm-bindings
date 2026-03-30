@@ -77,9 +77,9 @@ jobs:
       uses: actions/cache/restore@v5
       with:
         path: ~/.conan2
-        key: v2-conan-${{ runner.os }}-${{ hashFiles('pyproject.toml') }}
+        key: v3-conan-${{ runner.os }}-${{ hashFiles('pyproject.toml') }}
         restore-keys: |
-          v2-conan-${{ runner.os }}-
+          v3-conan-${{ runner.os }}-
 
     - name: Run CIBuildWheel
       uses: pypa/cibuildwheel@v3.4.0
@@ -122,7 +122,7 @@ jobs:
       if: "!cancelled() && runner.os == 'Windows'"
       with:
         path: ~/.conan2
-        key: v2-conan-${{ runner.os }}-${{ hashFiles('pyproject.toml') }}
+        key: v3-conan-${{ runner.os }}-${{ hashFiles('pyproject.toml') }}
 
   # Verify that committed .pyi stubs match the actual C++ bindings.
   # Installs the Linux wheel, regenerates stubs via nanobind, and diffs against the repo.
