@@ -65,12 +65,6 @@ jobs:
         CIBW_CONFIG_SETTINGS_WINDOWS: "cmake.define.CMAKE_CXX_COMPILER_LAUNCHER=sccache cmake.define.CMAKE_C_COMPILER_LAUNCHER=sccache cmake.define.ENABLE_CONAN=ON"
         CIBW_ENVIRONMENT_WINDOWS: "SCCACHE_DIR=${USERPROFILE}\\.sccache"
 
-    - name: Upload wheels
-      uses: actions/upload-artifact@v4
-      with:
-        name: wheels-${{ matrix.platform }}
-        path: wheelhouse/*.whl
-
     - name: Save ccache
       uses: actions/cache/save@v5
       if: always() && runner.os != 'Windows'
