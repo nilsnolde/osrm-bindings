@@ -1,13 +1,14 @@
+diff --git a/conanfile.py b/conanfile.py
+index 8124ac150..e9187dcd2 100644
 --- a/conanfile.py
 +++ b/conanfile.py
-@@ -17,11 +17,8 @@
-     def configure(self):
-         self.options["boost"].without_python = True
+@@ -19,9 +19,6 @@ class OsrmConan(ConanFile):
          self.options["boost"].without_coroutine = True
          self.options["boost"].without_stacktrace = True
          self.options["boost"].without_cobalt = True
 -        self.options["bzip2"].shared = True
 -        self.options["hwloc"].shared = True
 -        self.options["xz-utils"].shared = True
-
+         
      def generate(self):
+         tc = CMakeToolchain(self)

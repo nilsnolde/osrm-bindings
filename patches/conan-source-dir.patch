@@ -1,6 +1,8 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index a6aac9106..0615b5141 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -41,19 +41,19 @@ if (ENABLE_CONAN)
+@@ -41,10 +41,8 @@ if (ENABLE_CONAN)
    if (NOT CONAN_EXECUTABLE)
      message(FATAL_ERROR "Conan not found! Please install Conan 2.x and try again.")
    else()
@@ -12,9 +14,7 @@
        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
        OUTPUT_VARIABLE conan_stdout
        ERROR_VARIABLE conan_stderr
-       RESULT_VARIABLE conan_install_result
-     )
-
+@@ -54,6 +52,8 @@ if (ENABLE_CONAN)
      if (NOT conan_install_result EQUAL 0)
        message(FATAL_ERROR "Conan install failed: ${conan_install_result}. Stderr: ${conan_stderr}. Stdout: ${conan_stdout}")
      endif()
@@ -22,3 +22,4 @@
 +    include("${CMAKE_CURRENT_BINARY_DIR}/conan_toolchain.cmake")
    endif()
  endif()
+ 
