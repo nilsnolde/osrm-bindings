@@ -37,7 +37,7 @@ jobs:
       uses: actions/cache/restore@v5
       with:
         path: /tmp/ccache
-        key: ccache-${{ runner.os }}-main-
+        key: ccache-${{ runner.os }}-nn-update-osrm-
         restore-keys: |
           ccache-${{ runner.os }}-
 
@@ -51,7 +51,7 @@ jobs:
       uses: actions/cache/restore@v5
       with:
         path: ~/.sccache
-        key: sccache-${{ runner.os }}-main-
+        key: sccache-${{ runner.os }}-nn-update-osrm-
         restore-keys: |
           sccache-${{ runner.os }}-
 
