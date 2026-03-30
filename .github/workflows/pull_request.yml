@@ -11,7 +11,7 @@ on:
       test-windows:
         description: 'Run tests on Windows'
         type: boolean
-        default: false
+        default: true
         
 # Cancel CI runs on a branch when new commits were pushed
 # See https://stackoverflow.com/a/72408109/2582935
@@ -141,8 +141,9 @@ jobs:
         path: wheelhouse
     - name: Install wheel and regenerate stubs
       run: |
-        pip install nanobind
+        pip install nanobind ruff
         pip install wheelhouse/*.whl
-        python -m nanobind.stubgen -m osrm_ext -o src/osrm/osrm_ext.pyi
+        python -m nanobind.stubgen -m osrm.osrm_ext -o src/osrm/osrm_ext.pyi
+        ruff format src/osrm/osrm_ext.pyi
     - name: Check for differences
       run: git diff --exit-code src/osrm/osrm_ext.pyi || (echo "::error::Stubs are out of date. Rebuild locally and commit the updated .pyi file." && exit 1)
