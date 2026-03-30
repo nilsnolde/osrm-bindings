@@ -63,7 +63,7 @@ jobs:
       if: runner.os == 'Windows'
       shell: bash
       run: mkdir -p ~/.sccache
-      
+
     - name: Restore sccache
       if: runner.os == 'Windows'
       uses: actions/cache/restore@v5
@@ -83,9 +83,9 @@ jobs:
       uses: actions/cache/restore@v5
       with:
         path: ~/.conan2
-        key: v3-conan-${{ runner.os }}-${{ hashFiles('pyproject.toml') }}
+        key: v4-conan-${{ runner.os }}-${{ hashFiles('pyproject.toml') }}
         restore-keys: |
-          v3-conan-${{ runner.os }}-
+          v4-conan-${{ runner.os }}-
 
     - name: Run CIBuildWheel
       uses: pypa/cibuildwheel@v3.4.0
@@ -128,7 +128,7 @@ jobs:
       if: "!cancelled() && runner.os == 'Windows' && steps.conan-cache.outputs.cache-hit != 'true'"
       with:
         path: ~/.conan2
-        key: v3-conan-${{ runner.os }}-${{ hashFiles('pyproject.toml') }}
+        key: v4-conan-${{ runner.os }}-${{ hashFiles('pyproject.toml') }}
 
   # Verify that committed .pyi stubs match the actual C++ bindings.
   # Installs the Linux wheel, regenerates stubs via nanobind, and diffs against the repo.
