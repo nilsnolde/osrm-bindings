@@ -37,6 +37,10 @@ jobs:
           ccache-${{ runner.os }}-${{ github.ref_name }}-
           ccache-${{ runner.os }}-
 
+    - name: Set up sccache dir
+      if: runner.os == 'Windows'
+      shell: bash
+      run: mkdir -p ~/.sccache
     - name: Restore sccache
       if: runner.os == 'Windows'
       uses: actions/cache/restore@v5
@@ -48,6 +52,7 @@ jobs:
           sccache-${{ runner.os }}-
 
     - name: Restore Conan cache
+      id: conan-cache
       if: runner.os == 'Windows'
       uses: actions/cache/restore@v5
       with:
@@ -81,7 +86,7 @@ jobs:
 
     - name: Save Conan cache
       uses: actions/cache/save@v5
-      if: "!cancelled() && runner.os == 'Windows'"
+      if: "!cancelled() && runner.os == 'Windows' && steps.conan-cache.outputs.cache-hit != 'true'"
       with:
         path: ~/.conan2
         key: v2-conan-${{ runner.os }}-${{ hashFiles('pyproject.toml') }}
