@@ -44,6 +44,8 @@ jobs:
         pip install sccache
         mkdir -p "$USERPROFILE/.sccache"
         echo "SCCACHE_DIR=$USERPROFILE/.sccache" >> "$GITHUB_ENV"
+        echo "CMAKE_CXX_COMPILER_LAUNCHER=sccache" >> "$GITHUB_ENV"
+        echo "CMAKE_C_COMPILER_LAUNCHER=sccache" >> "$GITHUB_ENV"
 
     - name: Restore sccache
       if: runner.os == 'Windows'
@@ -54,6 +56,11 @@ jobs:
         restore-keys: |
           sccache-${{ runner.os }}-${{ github.ref_name }}-
           sccache-${{ runner.os }}-
+
+    - name: Start sccache server
+      if: runner.os == 'Windows'
+      shell: bash
+      run: sccache --start-server && sccache --show-stats
 
     - name: Restore Conan cache
       id: conan-cache
@@ -71,12 +78,12 @@ jobs:
         CIBW_CONTAINER_ENGINE: "docker; create_args: --volume /tmp/ccache:/ccache"
         CIBW_ENVIRONMENT_LINUX: "LD_LIBRARY_PATH=/usr/local/lib64:${LD_LIBRARY_PATH} CCACHE_DIR=/ccache"
         CIBW_CONFIG_SETTINGS_MACOS: "cmake.define.CMAKE_CXX_COMPILER_LAUNCHER=ccache cmake.define.CMAKE_C_COMPILER_LAUNCHER=ccache"
-        CIBW_CONFIG_SETTINGS_WINDOWS: "cmake.define.CMAKE_CXX_COMPILER_LAUNCHER=sccache cmake.define.CMAKE_C_COMPILER_LAUNCHER=sccache cmake.define.ENABLE_CONAN=ON"
+        CIBW_CONFIG_SETTINGS_WINDOWS: "cmake.define.ENABLE_CONAN=ON"
 
     - name: Stop sccache server
       if: always() && runner.os == 'Windows'
       shell: bash
-      run: sccache --show-stats && sccache --stop-server
+      run: sccache --show-stats || true; sccache --stop-server || true
 
     - name: Save ccache
       uses: actions/cache/save@v5

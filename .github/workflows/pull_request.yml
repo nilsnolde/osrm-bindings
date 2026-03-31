@@ -67,6 +67,10 @@ jobs:
         pip install sccache
         mkdir -p "$USERPROFILE/.sccache"
         echo "SCCACHE_DIR=$USERPROFILE/.sccache" >> "$GITHUB_ENV"
+        # CMake reads these env vars directly (3.17+) to set compiler launchers.
+        # More reliable than passing via config-settings through cibuildwheel.
+        echo "CMAKE_CXX_COMPILER_LAUNCHER=sccache" >> "$GITHUB_ENV"
+        echo "CMAKE_C_COMPILER_LAUNCHER=sccache" >> "$GITHUB_ENV"
 
     - name: Restore sccache
       if: runner.os == 'Windows'
@@ -77,6 +81,13 @@ jobs:
         restore-keys: |
           sccache-${{ runner.os }}-${{ github.head_ref }}-
           sccache-${{ runner.os }}-
+
+    # Start sccache server early so cibuildwheel reuses it (same port).
+    # This also shows restored cache stats.
+    - name: Start sccache server
+      if: runner.os == 'Windows'
+      shell: bash
+      run: sccache --start-server && sccache --show-stats
 
     # Conan package manager cache (Windows only — Linux/macOS use system packages or the manylinux image).
     # Keyed on pyproject.toml hash since it contains OSRM_GIT_TAG which determines which conanfile is used.
@@ -100,16 +111,16 @@ jobs:
         CIBW_ENVIRONMENT_LINUX: "LD_LIBRARY_PATH=/usr/local/lib64:${LD_LIBRARY_PATH} CCACHE_DIR=/ccache"
         # macOS: no container, so pass ccache as cmake compiler launcher
         CIBW_CONFIG_SETTINGS_MACOS: "cmake.define.CMAKE_CXX_COMPILER_LAUNCHER=ccache cmake.define.CMAKE_C_COMPILER_LAUNCHER=ccache"
-        # Windows: use sccache (MSVC-compatible) as cmake compiler launcher.
-        # SCCACHE_DIR is inherited from $GITHUB_ENV (set in "Set up sccache" step).
-        CIBW_CONFIG_SETTINGS_WINDOWS: "cmake.define.CMAKE_CXX_COMPILER_LAUNCHER=sccache cmake.define.CMAKE_C_COMPILER_LAUNCHER=sccache cmake.define.ENABLE_CONAN=ON"
+        # Windows: ENABLE_CONAN for dependencies. Compiler launcher (sccache) is set
+        # via CMAKE_*_COMPILER_LAUNCHER env vars in "Set up sccache" step.
+        CIBW_CONFIG_SETTINGS_WINDOWS: "cmake.define.ENABLE_CONAN=ON"
         # Skip Windows tests unless explicitly enabled via workflow_dispatch
         CIBW_TEST_COMMAND_WINDOWS: ${{ inputs.test-windows == false && ' ' || '' }}
 
     - name: Stop sccache server
       if: always() && runner.os == 'Windows'
       shell: bash
-      run: sccache --show-stats && sccache --stop-server
+      run: sccache --show-stats || true; sccache --stop-server || true
 
     - name: Upload wheels
       uses: actions/upload-artifact@v4
