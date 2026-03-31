@@ -32,7 +32,7 @@ jobs:
 
   build_wheels:
     needs: [lint]
-    name: PR - cp*, ${{ matrix.platform }}
+    name: PR - cp312, ${{ matrix.platform }}
     runs-on: ${{ matrix.platform }}-${{ matrix.version }}
     strategy:
       fail-fast: true
@@ -58,19 +58,21 @@ jobs:
           ccache-${{ runner.os }}-
 
     # sccache for Windows: like ccache but supports MSVC. No container on Windows,
-    # so sccache runs directly on the runner.
-    - name: Set up sccache dir
+    # so sccache runs directly on the runner. Install at runner level so we can
+    # show stats and stop the server after cibuildwheel finishes.
+    - name: Set up sccache
       if: runner.os == 'Windows'
       shell: bash
       run: |
-        mkdir -p ~/.sccache
-        echo "SCCACHE_DIR=$USERPROFILE\\.sccache" >> "$GITHUB_ENV"
+        pip install sccache
+        mkdir -p "$USERPROFILE/.sccache"
+        echo "SCCACHE_DIR=$USERPROFILE/.sccache" >> "$GITHUB_ENV"
 
     - name: Restore sccache
       if: runner.os == 'Windows'
       uses: actions/cache/restore@v5
       with:
-        path: ~/.sccache
+        path: ${{ env.SCCACHE_DIR }}
         key: sccache-${{ runner.os }}-${{ github.head_ref }}-${{ github.run_id }}
         restore-keys: |
           sccache-${{ runner.os }}-${{ github.head_ref }}-
@@ -98,11 +100,16 @@ jobs:
         CIBW_ENVIRONMENT_LINUX: "LD_LIBRARY_PATH=/usr/local/lib64:${LD_LIBRARY_PATH} CCACHE_DIR=/ccache"
         # macOS: no container, so pass ccache as cmake compiler launcher
         CIBW_CONFIG_SETTINGS_MACOS: "cmake.define.CMAKE_CXX_COMPILER_LAUNCHER=ccache cmake.define.CMAKE_C_COMPILER_LAUNCHER=ccache"
-        # Windows: use sccache (MSVC-compatible) as cmake compiler launcher
+        # Windows: use sccache (MSVC-compatible) as cmake compiler launcher.
+        # SCCACHE_DIR is inherited from $GITHUB_ENV (set in "Set up sccache" step).
         CIBW_CONFIG_SETTINGS_WINDOWS: "cmake.define.CMAKE_CXX_COMPILER_LAUNCHER=sccache cmake.define.CMAKE_C_COMPILER_LAUNCHER=sccache cmake.define.ENABLE_CONAN=ON"
-        CIBW_ENVIRONMENT_WINDOWS: "SCCACHE_DIR=${USERPROFILE}\\.sccache"
         # Skip Windows tests unless explicitly enabled via workflow_dispatch
         CIBW_TEST_COMMAND_WINDOWS: ${{ inputs.test-windows == false && ' ' || '' }}
+
+    - name: Stop sccache server
+      if: always() && runner.os == 'Windows'
+      shell: bash
+      run: sccache --show-stats && sccache --stop-server
 
     - name: Upload wheels
       uses: actions/upload-artifact@v4
@@ -121,19 +128,20 @@ jobs:
       uses: actions/cache/save@v5
       if: always() && runner.os == 'Windows'
       with:
-        path: ~/.sccache
+        path: ${{ env.SCCACHE_DIR }}
         key: sccache-${{ runner.os }}-${{ github.head_ref }}-${{ github.run_id }}
 
     # Don't save conan cache on cancellation or if exact key was already cached
     - name: Save Conan cache
       uses: actions/cache/save@v5
-      if: "!cancelled() && runner.os == 'Windows' && steps.conan-cache.outputs.cache-hit != 'true'"
+      if: "runner.os == 'Windows' && steps.conan-cache.outputs.cache-hit != 'true'"
       with:
         path: ~/.conan2
         key: v4-conan-${{ runner.os }}-${{ hashFiles('pyproject.toml') }}
 
   # Verify that committed .pyi stubs match the actual C++ bindings.
-  # Installs the Linux wheel, regenerates stubs via nanobind, and diffs against the repo.
+  # Installs the Linux wheel, regenerates stubs via nanobind, ruff formats them,
+  # and diffs against the repo.
   check_stubs:
     name: Check stubs are up to date
     needs: [build_wheels]

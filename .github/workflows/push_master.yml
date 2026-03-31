@@ -37,18 +37,19 @@ jobs:
           ccache-${{ runner.os }}-${{ github.ref_name }}-
           ccache-${{ runner.os }}-
 
-    - name: Set up sccache dir
+    - name: Set up sccache
       if: runner.os == 'Windows'
       shell: bash
       run: |
-        mkdir -p ~/.sccache
-        echo "SCCACHE_DIR=$USERPROFILE\\.sccache" >> "$GITHUB_ENV"
-      
+        pip install sccache
+        mkdir -p "$USERPROFILE/.sccache"
+        echo "SCCACHE_DIR=$USERPROFILE/.sccache" >> "$GITHUB_ENV"
+
     - name: Restore sccache
       if: runner.os == 'Windows'
       uses: actions/cache/restore@v5
       with:
-        path: ~/.sccache
+        path: ${{ env.SCCACHE_DIR }}
         key: sccache-${{ runner.os }}-${{ github.ref_name }}-${{ github.run_id }}
         restore-keys: |
           sccache-${{ runner.os }}-${{ github.ref_name }}-
@@ -71,7 +72,11 @@ jobs:
         CIBW_ENVIRONMENT_LINUX: "LD_LIBRARY_PATH=/usr/local/lib64:${LD_LIBRARY_PATH} CCACHE_DIR=/ccache"
         CIBW_CONFIG_SETTINGS_MACOS: "cmake.define.CMAKE_CXX_COMPILER_LAUNCHER=ccache cmake.define.CMAKE_C_COMPILER_LAUNCHER=ccache"
         CIBW_CONFIG_SETTINGS_WINDOWS: "cmake.define.CMAKE_CXX_COMPILER_LAUNCHER=sccache cmake.define.CMAKE_C_COMPILER_LAUNCHER=sccache cmake.define.ENABLE_CONAN=ON"
-        CIBW_ENVIRONMENT_WINDOWS: "SCCACHE_DIR=${USERPROFILE}\\.sccache"
+
+    - name: Stop sccache server
+      if: always() && runner.os == 'Windows'
+      shell: bash
+      run: sccache --show-stats && sccache --stop-server
 
     - name: Save ccache
       uses: actions/cache/save@v5
@@ -84,12 +89,12 @@ jobs:
       uses: actions/cache/save@v5
       if: always() && runner.os == 'Windows'
       with:
-        path: ~/.sccache
+        path: ${{ env.SCCACHE_DIR }}
         key: sccache-${{ runner.os }}-${{ github.ref_name }}-${{ github.run_id }}
 
     - name: Save Conan cache
       uses: actions/cache/save@v5
-      if: "!cancelled() && runner.os == 'Windows' && steps.conan-cache.outputs.cache-hit != 'true'"
+      if: "runner.os == 'Windows' && steps.conan-cache.outputs.cache-hit != 'true'"
       with:
         path: ~/.conan2
         key: v2-conan-${{ runner.os }}-${{ hashFiles('pyproject.toml') }}
