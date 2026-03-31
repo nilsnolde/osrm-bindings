@@ -111,8 +111,9 @@ jobs:
         CIBW_ENVIRONMENT_LINUX: "LD_LIBRARY_PATH=/usr/local/lib64:${LD_LIBRARY_PATH} CCACHE_DIR=/ccache"
         # macOS: no container, so pass ccache as cmake compiler launcher
         CIBW_CONFIG_SETTINGS_MACOS: "cmake.define.CMAKE_CXX_COMPILER_LAUNCHER=ccache cmake.define.CMAKE_C_COMPILER_LAUNCHER=ccache"
-        # Windows: ENABLE_CONAN for dependencies. Compiler launcher (sccache) is set
-        # via CMAKE_*_COMPILER_LAUNCHER env vars in "Set up sccache" step.
+        # Windows: sccache as compiler launcher + conan for dependencies.
+        # Must use CIBW_ENVIRONMENT to pass env vars into cibuildwheel's build subprocess.
+        CIBW_ENVIRONMENT_WINDOWS: "CMAKE_CXX_COMPILER_LAUNCHER=sccache CMAKE_C_COMPILER_LAUNCHER=sccache SCCACHE_DIR=$SCCACHE_DIR"
         CIBW_CONFIG_SETTINGS_WINDOWS: "cmake.define.ENABLE_CONAN=ON"
         # Skip Windows tests unless explicitly enabled via workflow_dispatch
         CIBW_TEST_COMMAND_WINDOWS: ${{ inputs.test-windows == false && ' ' || '' }}
