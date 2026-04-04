@@ -82,8 +82,8 @@ jobs:
         # Windows: no compiler cache — VS generator doesn't support CMAKE_CXX_COMPILER_LAUNCHER.
         # CIBW_CONFIG_SETTINGS replaces pyproject.toml config-settings, so include ENABLE_CONAN.
         CIBW_CONFIG_SETTINGS_WINDOWS: "cmake.define.ENABLE_CONAN=ON"
-        # Skip Windows tests unless explicitly enabled via workflow_dispatch
-        CIBW_TEST_COMMAND_WINDOWS: ${{ inputs.test-windows && '' || ' ' }}
+        # # Skip Windows tests unless explicitly enabled via workflow_dispatch
+        # CIBW_TEST_COMMAND_WINDOWS: ${{ inputs.test-windows && '' || ' ' }}
 
     - name: Upload wheels
       uses: actions/upload-artifact@v4
