@@ -77,10 +77,10 @@ jobs:
       uses: actions/cache/restore@v5
       with:
         path: ${{ env.SCCACHE_DIR }}
-        key: sccache-${{ runner.os }}-${{ github.head_ref }}-${{ github.run_id }}
+        key: v2-sccache-${{ runner.os }}-${{ github.head_ref }}-${{ github.run_id }}
         restore-keys: |
-          sccache-${{ runner.os }}-${{ github.head_ref }}-
-          sccache-${{ runner.os }}-
+          v2-sccache-${{ runner.os }}-${{ github.head_ref }}-
+          v2-sccache-${{ runner.os }}-
 
     # Start sccache server early so cibuildwheel reuses it (same port).
     # This also shows restored cache stats.
@@ -111,10 +111,10 @@ jobs:
         CIBW_ENVIRONMENT_LINUX: "LD_LIBRARY_PATH=/usr/local/lib64:${LD_LIBRARY_PATH} CCACHE_DIR=/ccache"
         # macOS: no container, so pass ccache as cmake compiler launcher
         CIBW_CONFIG_SETTINGS_MACOS: "cmake.define.CMAKE_CXX_COMPILER_LAUNCHER=ccache cmake.define.CMAKE_C_COMPILER_LAUNCHER=ccache"
-        # Windows: sccache as compiler launcher + conan for dependencies.
-        # Must use CIBW_ENVIRONMENT to pass env vars into cibuildwheel's build subprocess.
+        # Windows: sccache via cmake.define (config-settings) + env vars (belt & suspenders).
+        # CIBW_CONFIG_SETTINGS replaces pyproject.toml config-settings, so include everything.
         CIBW_ENVIRONMENT_WINDOWS: "CMAKE_CXX_COMPILER_LAUNCHER=sccache CMAKE_C_COMPILER_LAUNCHER=sccache SCCACHE_DIR=$SCCACHE_DIR"
-        CIBW_CONFIG_SETTINGS_WINDOWS: "cmake.define.ENABLE_CONAN=ON"
+        CIBW_CONFIG_SETTINGS_WINDOWS: "cmake.define.ENABLE_CONAN=ON cmake.define.CMAKE_CXX_COMPILER_LAUNCHER=sccache cmake.define.CMAKE_C_COMPILER_LAUNCHER=sccache"
         # Skip Windows tests unless explicitly enabled via workflow_dispatch
         CIBW_TEST_COMMAND_WINDOWS: ${{ inputs.test-windows == false && ' ' || '' }}
 
@@ -141,7 +141,7 @@ jobs:
       if: always() && runner.os == 'Windows'
       with:
         path: ${{ env.SCCACHE_DIR }}
-        key: sccache-${{ runner.os }}-${{ github.head_ref }}-${{ github.run_id }}
+        key: v2-sccache-${{ runner.os }}-${{ github.head_ref }}-${{ github.run_id }}
 
     # Don't save conan cache on cancellation or if exact key was already cached
     - name: Save Conan cache
