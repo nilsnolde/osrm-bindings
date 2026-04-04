@@ -1,31 +1,68 @@
 [build-system]
-requires = ["scikit-build-core >=0.4.3", "nanobind >=1.3.1"]
+requires = [
+  "scikit-build-core >=0.12.0",
+  "nanobind >=2.12.0",
+  "setuptools-scm >=10",
+  "cmake",
+  "ninja",
+]
 build-backend = "scikit_build_core.build"
 
 [project]
-name = "osrm-bindings"
-version = "0.0.1"
+name = "osrm-py"
+dynamic = ["version"]
 description = "Python bindings for the osrm-backend project"
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.10"
+authors = [{name = "Doo Woong Chung"}, { name = "Nils Nolde" }]
 license = { file = "LICENSE" }
 
+[project.optional-dependencies]
+dev = ["pytest", "pre-commit", "ruff"]
+
 [project.urls]
-repository = "https://github.com/gis-ops/py-osrm"
+repository = "https://github.com/nilsnolde/osrm-py"
 "osrm-backend repository" = "https://github.com/Project-OSRM/osrm-backend"
+
+[tool.ruff]
+exclude = [".venv", "build"]
+extend-exclude = [
+    "dist",
+    "wheelhouse",
+    "*build*",
+    "*.egg-info",
+]
+line-length = 105
+lint.ignore = ["E731", "F811", "E741"]
+
+[tool.scikit-build.metadata]
+version.provider = "scikit_build_core.metadata.setuptools_scm"
+
+[tool.setuptools_scm]
+version_scheme = "no-guess-dev"
+local_scheme = "no-local-version"
 
 [tool.scikit-build]
 minimum-version = "0.4"
 build-dir = "build/{wheel_tag}"
+cmake.build-type = "Release"
 wheel.py-api = "cp312"
 wheel.packages = ["src/osrm", "src/bin"]
+sdist.include = ["pyproject.toml"]
+sdist.exclude = ["tests", "dist", "wheelhouse"]
+
+[tool.scikit-build.cmake.define]
+OSRM_GIT_REPO = "https://github.com/Project-OSRM/osrm-backend"
+OSRM_GIT_TAG = "27a4419f48671c6c4e5bbfe77d149b3326c73cee"
+CMAKE_BUILD_TYPE = "Release"
+CMAKE_CXX_SCAN_FOR_MODULES = "OFF"
 
 [tool.cibuildwheel]
 archs = ["native"]
-build = "cp*"
+build = "cp312-*"
 build-verbosity = 1
 skip = "*musllinux*"
-manylinux-x86_64-image = "ghcr.io/gis-ops/manylinux:2_28_osrm_python"
+manylinux-x86_64-image = "ghcr.io/nilsnolde/manylinux:2_28_osrm_python"
 test-requires = "pytest"
 test-command = [
   "cd {project}/tests/data",
@@ -35,39 +72,23 @@ test-command = [
 ]
 
 [tool.cibuildwheel.linux]
-environment = "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib/intel64/gcc4.8/"
+environment = "LD_LIBRARY_PATH=/usr/local/lib64:${LD_LIBRARY_PATH}"
+before-build = "ccache -s && ccache -M 500M"
 repair-wheel-command = "auditwheel repair -w {dest_dir} {wheel}"
 
 [tool.cibuildwheel.macos]
-environment = "MACOSX_DEPLOYMENT_TARGET=10.14"
+environment = "MACOSX_DEPLOYMENT_TARGET=15 CCACHE_DIR=/tmp/ccache"
+before-build = "ccache -s && ccache -M 500M"
 before-all = """
-  mkdir osrm-backend
-  tar -zxf osrm-backend.tgz -C osrm-backend
-  cd osrm-backend
-
-  cp -r include /usr/local
-  cp -r third_party/flatbuffers/include /usr/local
-  cp -r third_party/variant/include /usr/local
-  cp -r profiles /usr/local/share/osrm/
-  cd build
-  cp *.a /usr/local/lib
-  cp osrm-* /usr/local/bin
-  cp libosrm.pc /usr/local/lib/pkgconfig
-
   export HOMEBREW_NO_AUTO_UPDATE=1 HOMEBREW_NO_INSTALL_CLEANUP=1
-  brew install lua tbb boost@1.76
-  brew link boost@1.76
+  brew install lua tbb boost@1.90 ccache
+  brew link boost@1.90
 """
 
 [tool.cibuildwheel.windows]
-before-all = [
-  "tar -zxf osrm-backend.tgz",
-  "((robocopy /E /IS /NFL /NDL /NJH /NJS /NP /MOVE .conan C:\\.conan) ^& IF %ERRORLEVEL% LSS 8 SET ERRORLEVEL = 0)",
-  "((robocopy /E /IS /NFL /NDL /NJH /NJS /NP /MOVE Users C:\\Users) ^& IF %ERRORLEVEL% LSS 8 SET ERRORLEVEL = 0)",
-  "MKDIR C:\\OSRM",
-  "((robocopy /E /IS /NFL /NDL /NJH /NJS /NP /MOVE OSRM C:\\OSRM) ^& IF %ERRORLEVEL% LSS 8 SET ERRORLEVEL = 0)",
-  "((robocopy /E /IS /NFL /NDL /NJH /NJS /NP /MOVE C:\\OSRM\\lib\\pkgconfig C:\\Strawberry\\c\\lib\\pkgconfig) ^& IF %ERRORLEVEL% LSS 8 SET ERRORLEVEL = 0)"
-]
+before-build = "pip install conan==2.27.0 delvewheel && conan profile detect --force"
+config-settings = "cmake.define.ENABLE_CONAN=ON"
+repair-wheel-command = "delvewheel repair -w {dest_dir} {wheel}"
 test-command = [
   "cd /d {project}/tests/data",
   "windows-build-tests.bat",

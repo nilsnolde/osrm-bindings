@@ -7,41 +7,67 @@ on:
     paths-ignore:
       - '*.md'
 
+# Cancel CI runs on a branch when new commits were pushed
+# See https://stackoverflow.com/a/72408109/2582935
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build_wheels:
-    name: Push - cp38*, ${{ matrix.platform }}
+    name: Push - cp312 SABI, ${{ matrix.platform }}
     runs-on: ${{ matrix.platform }}-${{ matrix.version }}
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
         platform: [ubuntu, macos, windows]
         version: [latest]
-    env:
-      GITHUB_TOKEN: ${{ github.token }}
-      ARTIFACT_WORKFLOW: osrm-backend.yml
 
     steps:
     - name: Checkout Project
-      uses: actions/checkout@v3
+      uses: actions/checkout@v6
 
-    - name: Get osrm-backend Artifact ID
-      if: matrix.platform != 'ubuntu'
-      shell: bash
-      run: |
-        echo ARTIFACT_ID=$( \
-          gh api -X GET \
-          repos/${{ github.repository }}/actions/workflows/${{ env.ARTIFACT_WORKFLOW }}/runs \
-          -F status='success' \
-          -F per_page=1 \
-          | jq '.["workflow_runs"][0].id') \
-        >> $GITHUB_ENV
+    - name: Restore ccache
+      if: runner.os != 'Windows'
+      uses: actions/cache/restore@v5
+      with:
+        path: /tmp/ccache
+        key: ccache-${{ runner.os }}-${{ github.ref_name }}-${{ github.run_id }}
+        restore-keys: |
+          ccache-${{ runner.os }}-${{ github.ref_name }}-
+          ccache-${{ runner.os }}-
 
-    - name: Download osrm-backend Artifact
-      if: matrix.platform != 'ubuntu'
-      run: |
-        gh run download ${{ env.ARTIFACT_ID }} -n osrm-backend_${{ matrix.platform }}
+    - name: Restore Conan cache
+      id: conan-cache
+      if: runner.os == 'Windows'
+      uses: actions/cache/restore@v5
+      with:
+        path: ~/.conan2
+        key: v4-conan-${{ runner.os }}-${{ hashFiles('pyproject.toml') }}
+        restore-keys: |
+          v4-conan-${{ runner.os }}-
 
     - name: Run CIBuildWheel
-      uses: pypa/cibuildwheel@v2.14.1
+      uses: pypa/cibuildwheel@v3.4.0
       env:
-        CIBW_BUILD: cp38*
+        CIBW_CONTAINER_ENGINE: "docker; create_args: --volume /tmp/ccache:/ccache"
+        CIBW_ENVIRONMENT_LINUX: "LD_LIBRARY_PATH=/usr/local/lib64:${LD_LIBRARY_PATH} CCACHE_DIR=/ccache"
+        CIBW_CONFIG_SETTINGS_MACOS: "cmake.define.CMAKE_CXX_COMPILER_LAUNCHER=ccache cmake.define.CMAKE_C_COMPILER_LAUNCHER=ccache"
+        # Windows: no compiler cache — VS generator doesn't support CMAKE_CXX_COMPILER_LAUNCHER.
+        CIBW_CONFIG_SETTINGS_WINDOWS: "cmake.define.ENABLE_CONAN=ON"
+        # TODO(nils): enable windows tests again
+        CIBW_TEST_COMMAND_WINDOWS: ${{ ' ' }}
+
+    - name: Save ccache
+      uses: actions/cache/save@v5
+      if: always() && runner.os != 'Windows'
+      with:
+        path: /tmp/ccache
+        key: ccache-${{ runner.os }}-${{ github.ref_name }}-${{ github.run_id }}
+
+    - name: Save Conan cache
+      uses: actions/cache/save@v5
+      if: "runner.os == 'Windows' && steps.conan-cache.outputs.cache-hit != 'true'"
+      with:
+        path: ~/.conan2
+        key: v4-conan-${{ runner.os }}-${{ hashFiles('pyproject.toml') }}

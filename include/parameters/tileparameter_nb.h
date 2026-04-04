@@ -5,4 +5,4 @@
 
 void init_TileParameters(nanobind::module_& m);
 
-#endif //OSRM_NB_TILEPARAMETER_H
+#endif // OSRM_NB_TILEPARAMETER_H

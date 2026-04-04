@@ -1,0 +1,5 @@
+{
+  "cmake.configureArgs": [
+    "-DPython_EXECUTABLE=${workspaceFolder}/.venv/bin/python"
+  ]
+}

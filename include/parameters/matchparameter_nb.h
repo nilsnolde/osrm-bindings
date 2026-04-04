@@ -2,6 +2,7 @@
 #define OSRM_NB_MATCHPARAMETER_H
 
 #include "engine/api/match_parameters.hpp"
+#include "parameters/routeparameter_nb.h"
 
 #include <nanobind/nanobind.h>
 
@@ -9,12 +10,14 @@
 
 using osrm::engine::api::MatchParameters;
 
+// Must be visible in every TU that converts these enum types to/from Python.
+NB_MAKE_OPAQUE(osrm::engine::api::MatchParameters::GapsType)
+
 void init_MatchParameters(nanobind::module_& m);
 
-static const std::unordered_map<std::string, MatchParameters::GapsType> gaps_map {
-    { "split", MatchParameters::GapsType::Split },
-    { std::string(), MatchParameters::GapsType::Split },
-    { "ignore", MatchParameters::GapsType::Ignore }
-};
+static const std::unordered_map<std::string, MatchParameters::GapsType>
+    gaps_map{{"split", MatchParameters::GapsType::Split},
+             {std::string(), MatchParameters::GapsType::Split},
+             {"ignore", MatchParameters::GapsType::Ignore}};
 
-#endif //OSRM_NB_MATCHPARAMETER_H
+#endif // OSRM_NB_MATCHPARAMETER_H

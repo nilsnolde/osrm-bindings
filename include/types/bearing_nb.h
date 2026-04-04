@@ -5,4 +5,4 @@
 
 void init_Bearing(nanobind::module_& m);
 
-#endif //OSRM_NB_BEARING_H
+#endif // OSRM_NB_BEARING_H

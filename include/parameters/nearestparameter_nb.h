@@ -5,4 +5,4 @@
 
 void init_NearestParameters(nanobind::module_& m);
 
-#endif //OSRM_NB_NEARESTPARAMETER_H
+#endif // OSRM_NB_NEARESTPARAMETER_H

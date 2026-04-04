@@ -5,4 +5,4 @@
 
 void init_Optional(nanobind::module_& m);
 
-#endif //OSRM_NB_OPTIONAL_H
+#endif // OSRM_NB_OPTIONAL_H
