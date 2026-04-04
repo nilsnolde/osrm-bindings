@@ -9,7 +9,7 @@ requires = [
 build-backend = "scikit_build_core.build"
 
 [project]
-name = "py-osrm"
+name = "osrm-bindings"
 dynamic = ["version"]
 description = "Python bindings for the osrm-backend project"
 readme = "README.md"
