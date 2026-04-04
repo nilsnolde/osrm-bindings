@@ -74,7 +74,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       id-token: write
-    environment: testpypi
 
     steps:
     - uses: actions/download-artifact@v4
@@ -86,4 +85,4 @@ jobs:
       uses: pypa/gh-action-pypi-publish@v1.13.0
       with:
         verbose: true
-        repository-url: https://test.pypi.org/legacy/
+        # repository-url: https://test.pypi.org/legacy/
