@@ -52,8 +52,8 @@ sdist.include = ["pyproject.toml"]
 sdist.exclude = ["tests", "dist", "wheelhouse"]
 
 [tool.scikit-build.cmake.define]
-OSRM_GIT_REPO = "https://github.com/nilsnolde/osrm-backend"
-OSRM_GIT_TAG = "de8a9da93aa09a4943d3964f0fb378a01a66af49"
+OSRM_GIT_REPO = "https://github.com/Project-OSRM/osrm-backend"
+OSRM_GIT_TAG = "27a4419f48671c6c4e5bbfe77d149b3326c73cee"
 CMAKE_BUILD_TYPE = "Release"
 CMAKE_CXX_SCAN_FOR_MODULES = "OFF"
 
