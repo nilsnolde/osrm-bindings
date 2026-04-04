@@ -1,4 +1,4 @@
-# osrm-py
+# py-osrm
 
 Python bindings for [osrm-backend](https://github.com/Project-OSRM/osrm-backend) using [nanobind](https://github.com/wjakob/nanobind), built with [scikit-build-core](https://github.com/scikit-build/scikit-build-core).
 

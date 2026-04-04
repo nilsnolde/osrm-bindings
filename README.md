@@ -1,7 +1,7 @@
-# osrm-py
-![PUSH_CI](https://github.com/nilsnolde/osrm-py/actions/workflows/push_master.yml/badge.svg)
+# py-osrm
+![PUSH_CI](https://github.com/nilsnolde/py-osrm/actions/workflows/push_master.yml/badge.svg)
 
-**osrm-py is a Python package that binds to [osrm-backend](https://github.com/Project-OSRM/osrm-backend) using [nanobind](https://github.com/wjakob/nanobind).**
+**py-osrm is a Python package that binds to [osrm-backend](https://github.com/Project-OSRM/osrm-backend) using [nanobind](https://github.com/wjakob/nanobind).**
 
 ---
 
@@ -17,7 +17,7 @@ On PyPI we only distribute `abi3` wheels for each platform, i.e. one needs at le
 
 ## Installation
 
-osrm-py is (likely, didn't check) supported from **CPython 3.10+** on, and can be installed from source via running the following command in the source folder:
+py-osrm is (likely, didn't check) supported from **CPython 3.10+** on, and can be installed from source via running the following command in the source folder:
 
 ```
 pip install .
@@ -78,4 +78,4 @@ pip install -e .
 Then commit the updated `.pyi` file. CI will verify that committed stubs are up to date.
 
 ## Documentation
-[Documentation Page](https://nilsnolde.github.io/osrm-py/)
+[Documentation Page](https://nilsnolde.github.io/py-osrm/)

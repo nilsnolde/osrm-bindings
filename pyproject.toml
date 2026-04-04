@@ -9,7 +9,7 @@ requires = [
 build-backend = "scikit_build_core.build"
 
 [project]
-name = "osrm-py"
+name = "py-osrm"
 dynamic = ["version"]
 description = "Python bindings for the osrm-backend project"
 readme = "README.md"
@@ -21,7 +21,7 @@ license = { file = "LICENSE" }
 dev = ["pytest", "pre-commit", "ruff"]
 
 [project.urls]
-repository = "https://github.com/nilsnolde/osrm-py"
+repository = "https://github.com/nilsnolde/py-osrm"
 "osrm-backend repository" = "https://github.com/Project-OSRM/osrm-backend"
 
 [tool.ruff]
