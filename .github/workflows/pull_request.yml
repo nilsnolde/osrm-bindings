@@ -3,7 +3,7 @@ name: Pull Request
 on:
   pull_request:
     branches:
-      - main
+      - none
     paths-ignore:
       - '*.md'
   workflow_dispatch:
@@ -32,23 +32,16 @@ jobs:
 
   build_wheels:
     needs: [lint]
-    name: PR - cp312, ${{ matrix.platform }}
-    runs-on: ${{ matrix.platform }}-${{ matrix.version }}
-    strategy:
-      fail-fast: true
-      matrix:
-        platform: [ubuntu, macos, windows]
-        version: [latest]
+    name: PR - cp312, Linux
+    runs-on: ubuntu-latest
 
     steps:
     - name: Checkout Project
       uses: actions/checkout@v6
 
-    # ccache for Linux/macOS: mount host cache dir into the manylinux container via docker volume.
+    # mount host cache dir into the manylinux container via docker volume.
     # The manylinux image already has ccache configured as a compiler wrapper, so no CMAKE_*_COMPILER_LAUNCHER needed for Linux.
-    # macOS uses CMAKE_*_COMPILER_LAUNCHER=ccache explicitly since there's no container.
     - name: Restore ccache
-      if: runner.os != 'Windows'
       uses: actions/cache/restore@v5
       with:
         path: /tmp/ccache
@@ -57,19 +50,6 @@ jobs:
           ccache-${{ runner.os }}-${{ github.head_ref }}-
           ccache-${{ runner.os }}-
 
-    # Conan package manager cache (Windows only — Linux/macOS use system packages or the manylinux image).
-    # Keyed on pyproject.toml hash since it contains OSRM_GIT_TAG which determines which conanfile is used.
-    # Uses !cancelled() for save to avoid caching partial downloads from cancelled runs.
-    - name: Restore Conan cache
-      id: conan-cache
-      if: runner.os == 'Windows'
-      uses: actions/cache/restore@v5
-      with:
-        path: ~/.conan2
-        key: v4-conan-${{ runner.os }}-${{ hashFiles('pyproject.toml') }}
-        restore-keys: |
-          v4-conan-${{ runner.os }}-
-
     - name: Run CIBuildWheel
       uses: pypa/cibuildwheel@v3.4.0
       env:
@@ -77,34 +57,12 @@ jobs:
         CIBW_CONTAINER_ENGINE: "docker; create_args: --volume /tmp/ccache:/ccache"
         # Set ccache dir inside container to the mounted volume
         CIBW_ENVIRONMENT_LINUX: "LD_LIBRARY_PATH=/usr/local/lib64:${LD_LIBRARY_PATH} CCACHE_DIR=/ccache"
-        # macOS: no container, so pass ccache as cmake compiler launcher
-        CIBW_CONFIG_SETTINGS_MACOS: "cmake.define.CMAKE_CXX_COMPILER_LAUNCHER=ccache cmake.define.CMAKE_C_COMPILER_LAUNCHER=ccache"
-        # Windows: no compiler cache — VS generator doesn't support CMAKE_CXX_COMPILER_LAUNCHER.
-        # CIBW_CONFIG_SETTINGS replaces pyproject.toml config-settings, so include ENABLE_CONAN.
-        CIBW_CONFIG_SETTINGS_WINDOWS: "cmake.define.ENABLE_CONAN=ON"
-        # # Skip Windows tests unless explicitly enabled via workflow_dispatch
-        # CIBW_TEST_COMMAND_WINDOWS: ${{ inputs.test-windows && '' || ' ' }}
-
-    - name: Upload wheels
-      uses: actions/upload-artifact@v4
-      with:
-        name: wheels-${{ matrix.platform }}
-        path: wheelhouse/*.whl
 
     - name: Save ccache
       uses: actions/cache/save@v5
-      if: always() && runner.os != 'Windows'
       with:
         path: /tmp/ccache
         key: ccache-${{ runner.os }}-${{ github.head_ref }}-${{ github.run_id }}
-
-    # Don't save conan cache on cancellation or if exact key was already cached
-    - name: Save Conan cache
-      uses: actions/cache/save@v5
-      if: "runner.os == 'Windows' && steps.conan-cache.outputs.cache-hit != 'true'"
-      with:
-        path: ~/.conan2
-        key: v4-conan-${{ runner.os }}-${{ hashFiles('pyproject.toml') }}
 
   # Verify that committed .pyi stubs match the actual C++ bindings.
   # Installs the Linux wheel, regenerates stubs via nanobind, ruff formats them,
