@@ -1,11 +1,20 @@
 # osrm-bindings
-![PUSH_CI](https://github.com/nilsnolde/osrm-bindings/actions/workflows/push_master.yml/badge.svg)
+[![Push Master](https://github.com/nilsnolde/osrm-bindings/actions/workflows/push_master.yml/badge.svg)](https://github.com/nilsnolde/osrm-bindings/actions/workflows/push_master.yml)
+[![osrm-bindings version](https://img.shields.io/pypi/v/osrm-bindings?label=osrm-bindings)](https://pypi.org/project/osrm-bindings/)
+
 
 **osrm-bindings is a Python package that binds to [osrm-backend](https://github.com/Project-OSRM/osrm-backend) using [nanobind](https://github.com/wjakob/nanobind).**
 
 ---
 
-## PyPI Supported Platforms
+## PyPI
+
+```
+pip install osrm-bindings
+```
+
+> [!NOTE]
+> On PyPI we only distribute `abi3` wheels for each platform, i.e. one needs at least Python 3.12 to install the wheels. Of course it'll fall back to attempt an installation from source.
 
 Platform | Arch
 ---|---
@@ -13,9 +22,7 @@ Linux | x86_64
 MacOS | x86_64
 Windows | x86_64
 
-On PyPI we only distribute `abi3` wheels for each platform, i.e. one needs at least Python 3.12 to install the wheels. Of course it'll fall back to attempt an installation from source.
-
-## Installation
+## From Source
 
 osrm-bindings is (likely, didn't check) supported from **CPython 3.10+** on, and can be installed from source via running the following command in the source folder:
 
