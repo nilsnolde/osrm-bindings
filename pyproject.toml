@@ -85,8 +85,8 @@ before-all = """
 """
 
 [tool.cibuildwheel.windows]
-before-build = "echo CMAKE_CXX_COMPILER_LAUNCHER=%CMAKE_CXX_COMPILER_LAUNCHER% && echo SCCACHE_DIR=%SCCACHE_DIR% && where sccache && pip install conan==2.27.0 delvewheel sccache && conan profile detect --force && sccache --show-stats"
-config-settings = "cmake.define.ENABLE_CONAN=ON cmake.define.CMAKE_CXX_COMPILER_LAUNCHER=sccache cmake.define.CMAKE_C_COMPILER_LAUNCHER=sccache cmake.args=-GNinja"
+before-build = "pip install conan==2.27.0 delvewheel && conan profile detect --force"
+config-settings = "cmake.define.ENABLE_CONAN=ON"
 repair-wheel-command = "delvewheel repair -w {dest_dir} {wheel}"
 test-command = [
   "cd /d {project}/tests/data",

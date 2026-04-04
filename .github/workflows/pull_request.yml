@@ -57,38 +57,6 @@ jobs:
           ccache-${{ runner.os }}-${{ github.head_ref }}-
           ccache-${{ runner.os }}-
 
-    # sccache for Windows: like ccache but supports MSVC. No container on Windows,
-    # so sccache runs directly on the runner. Install at runner level so we can
-    # show stats and stop the server after cibuildwheel finishes.
-    - name: Set up sccache
-      if: runner.os == 'Windows'
-      shell: bash
-      run: |
-        pip install sccache
-        mkdir -p "$USERPROFILE/.sccache"
-        echo "SCCACHE_DIR=$USERPROFILE/.sccache" >> "$GITHUB_ENV"
-        # CMake reads these env vars directly (3.17+) to set compiler launchers.
-        # More reliable than passing via config-settings through cibuildwheel.
-        echo "CMAKE_CXX_COMPILER_LAUNCHER=sccache" >> "$GITHUB_ENV"
-        echo "CMAKE_C_COMPILER_LAUNCHER=sccache" >> "$GITHUB_ENV"
-
-    - name: Restore sccache
-      if: runner.os == 'Windows'
-      uses: actions/cache/restore@v5
-      with:
-        path: ${{ env.SCCACHE_DIR }}
-        key: v2-sccache-${{ runner.os }}-${{ github.head_ref }}-${{ github.run_id }}
-        restore-keys: |
-          v2-sccache-${{ runner.os }}-${{ github.head_ref }}-
-          v2-sccache-${{ runner.os }}-
-
-    # Start sccache server early so cibuildwheel reuses it (same port).
-    # This also shows restored cache stats.
-    - name: Start sccache server
-      if: runner.os == 'Windows'
-      shell: bash
-      run: sccache --start-server && sccache --show-stats
-
     # Conan package manager cache (Windows only — Linux/macOS use system packages or the manylinux image).
     # Keyed on pyproject.toml hash since it contains OSRM_GIT_TAG which determines which conanfile is used.
     # Uses !cancelled() for save to avoid caching partial downloads from cancelled runs.
@@ -111,17 +79,11 @@ jobs:
         CIBW_ENVIRONMENT_LINUX: "LD_LIBRARY_PATH=/usr/local/lib64:${LD_LIBRARY_PATH} CCACHE_DIR=/ccache"
         # macOS: no container, so pass ccache as cmake compiler launcher
         CIBW_CONFIG_SETTINGS_MACOS: "cmake.define.CMAKE_CXX_COMPILER_LAUNCHER=ccache cmake.define.CMAKE_C_COMPILER_LAUNCHER=ccache"
-        # Windows: sccache via cmake.define (config-settings) + env vars (belt & suspenders).
-        # CIBW_CONFIG_SETTINGS replaces pyproject.toml config-settings, so include everything.
-        CIBW_ENVIRONMENT_WINDOWS: "CMAKE_CXX_COMPILER_LAUNCHER=sccache CMAKE_C_COMPILER_LAUNCHER=sccache SCCACHE_DIR=$SCCACHE_DIR"
-        CIBW_CONFIG_SETTINGS_WINDOWS: "cmake.define.ENABLE_CONAN=ON cmake.define.CMAKE_CXX_COMPILER_LAUNCHER=sccache cmake.define.CMAKE_C_COMPILER_LAUNCHER=sccache cmake.args=-GNinja"
+        # Windows: no compiler cache — VS generator doesn't support CMAKE_CXX_COMPILER_LAUNCHER.
+        # CIBW_CONFIG_SETTINGS replaces pyproject.toml config-settings, so include ENABLE_CONAN.
+        CIBW_CONFIG_SETTINGS_WINDOWS: "cmake.define.ENABLE_CONAN=ON"
         # Skip Windows tests unless explicitly enabled via workflow_dispatch
         CIBW_TEST_COMMAND_WINDOWS: ${{ inputs.test-windows && '' || ' ' }}
-
-    - name: Stop sccache server
-      if: always() && runner.os == 'Windows'
-      shell: bash
-      run: sccache --show-stats || true; sccache --stop-server || true
 
     - name: Upload wheels
       uses: actions/upload-artifact@v4
@@ -135,13 +97,6 @@ jobs:
       with:
         path: /tmp/ccache
         key: ccache-${{ runner.os }}-${{ github.head_ref }}-${{ github.run_id }}
-
-    - name: Save sccache
-      uses: actions/cache/save@v5
-      if: always() && runner.os == 'Windows'
-      with:
-        path: ${{ env.SCCACHE_DIR }}
-        key: v2-sccache-${{ runner.os }}-${{ github.head_ref }}-${{ github.run_id }}
 
     # Don't save conan cache on cancellation or if exact key was already cached
     - name: Save Conan cache
