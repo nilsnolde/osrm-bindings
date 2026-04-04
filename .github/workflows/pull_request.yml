@@ -114,7 +114,7 @@ jobs:
         # Windows: sccache via cmake.define (config-settings) + env vars (belt & suspenders).
         # CIBW_CONFIG_SETTINGS replaces pyproject.toml config-settings, so include everything.
         CIBW_ENVIRONMENT_WINDOWS: "CMAKE_CXX_COMPILER_LAUNCHER=sccache CMAKE_C_COMPILER_LAUNCHER=sccache SCCACHE_DIR=$SCCACHE_DIR"
-        CIBW_CONFIG_SETTINGS_WINDOWS: "cmake.define.ENABLE_CONAN=ON cmake.define.CMAKE_CXX_COMPILER_LAUNCHER=sccache cmake.define.CMAKE_C_COMPILER_LAUNCHER=sccache cmake.generator=Ninja"
+        CIBW_CONFIG_SETTINGS_WINDOWS: "cmake.define.ENABLE_CONAN=ON cmake.define.CMAKE_CXX_COMPILER_LAUNCHER=sccache cmake.define.CMAKE_C_COMPILER_LAUNCHER=sccache cmake.args=-GNinja"
         # Skip Windows tests unless explicitly enabled via workflow_dispatch
         CIBW_TEST_COMMAND_WINDOWS: ${{ inputs.test-windows && '' || ' ' }}
 
