@@ -56,8 +56,6 @@ jobs:
         CIBW_CONFIG_SETTINGS_MACOS: "cmake.define.CMAKE_CXX_COMPILER_LAUNCHER=ccache cmake.define.CMAKE_C_COMPILER_LAUNCHER=ccache"
         # Windows: no compiler cache — VS generator doesn't support CMAKE_CXX_COMPILER_LAUNCHER.
         CIBW_CONFIG_SETTINGS_WINDOWS: "cmake.define.ENABLE_CONAN=ON"
-        # TODO(nils): enable windows tests again
-        CIBW_TEST_COMMAND_WINDOWS: ${{ ' ' }}
 
     - name: Save ccache
       uses: actions/cache/save@v5
