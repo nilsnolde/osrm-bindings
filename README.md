@@ -5,6 +5,9 @@
 
 **osrm-bindings is a Python package that binds to [osrm-backend](https://github.com/Project-OSRM/osrm-backend) using [nanobind](https://github.com/wjakob/nanobind).**
 
+> [!WARNING]
+> `osrm-bindings` on Windows might not support map matching. See [this issue](https://github.com/nilsnolde/osrm-bindings/issues/40) on progress.
+
 ---
 
 ## PyPI
