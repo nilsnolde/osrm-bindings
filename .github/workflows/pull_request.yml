@@ -12,7 +12,7 @@ on:
         description: 'Run tests on Windows'
         type: boolean
         default: true
-        
+
 # Cancel CI runs on a branch when new commits were pushed
 # See https://stackoverflow.com/a/72408109/2582935
 concurrency:
@@ -45,10 +45,10 @@ jobs:
       uses: actions/cache/restore@v5
       with:
         path: /tmp/ccache
-        key: ccache-${{ runner.os }}-${{ github.head_ref }}-${{ github.run_id }}
+        key: ccache-${{ runner.os }}-${{ runner.arch }}-${{ github.head_ref }}-${{ github.run_id }}
         restore-keys: |
-          ccache-${{ runner.os }}-${{ github.head_ref }}-
-          ccache-${{ runner.os }}-
+          ccache-${{ runner.os }}-${{ runner.arch }}-${{ github.head_ref }}-
+          ccache-${{ runner.os }}-${{ runner.arch }}-
 
     - name: Run CIBuildWheel
       uses: pypa/cibuildwheel@v3.4.0
@@ -62,7 +62,7 @@ jobs:
       uses: actions/cache/save@v5
       with:
         path: /tmp/ccache
-        key: ccache-${{ runner.os }}-${{ github.head_ref }}-${{ github.run_id }}
+        key: ccache-${{ runner.os }}-${{ runner.arch }}-${{ github.head_ref }}-${{ github.run_id }}
 
     - name: Upload wheels
       uses: actions/upload-artifact@v4

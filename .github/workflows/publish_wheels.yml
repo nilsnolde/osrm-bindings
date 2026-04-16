@@ -17,13 +17,20 @@ on:
 
 jobs:
   build_wheels:
-    name: Wheels - cp*, ${{ matrix.platform }}
-    runs-on: ${{ matrix.platform }}-${{ matrix.version }}
+    name: Wheels - cp*, ${{ matrix.name }}
+    runs-on: ${{ matrix.runner }}
     strategy:
       fail-fast: true
       matrix:
-        platform: [ubuntu, macos, windows]
-        version: [latest]
+        include:
+          - name: Linux x86_64
+            runner: ubuntu-latest
+          - name: Linux aarch64
+            runner: ubuntu-24.04-arm
+          - name: macOS arm64
+            runner: macos-latest
+          - name: Windows amd64
+            runner: windows-latest
 
     steps:
     - name: Checkout Project
@@ -37,9 +44,9 @@ jobs:
       uses: actions/cache/restore@v5
       with:
         path: /tmp/ccache
-        key: ccache-${{ runner.os }}-main
+        key: ccache-${{ runner.os }}-${{ runner.arch }}-main
         restore-keys: |
-          ccache-${{ runner.os }}-
+          ccache-${{ runner.os }}-${{ runner.arch }}-
 
     - name: Restore Conan cache
       if: runner.os == 'Windows'
@@ -62,7 +69,7 @@ jobs:
     - name: Upload Wheels
       uses: actions/upload-artifact@v4
       with:
-        name: wheels-${{ matrix.platform }}
+        name: wheels-${{ matrix.name }}
         path: wheelhouse/*.whl
 
   upload_all:
