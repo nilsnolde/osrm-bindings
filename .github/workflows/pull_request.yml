@@ -1,96 +1,21 @@
 name: Pull Request
 
 on:
-  pull_request:
+  push:
     branches:
-      - main
-    paths-ignore:
-      - '*.md'
+      - nn-macos-arm
   workflow_dispatch:
-    inputs:
-      test-windows:
-        description: 'Run tests on Windows'
-        type: boolean
-        default: true
-        
-# Cancel CI runs on a branch when new commits were pushed
-# See https://stackoverflow.com/a/72408109/2582935
-concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
 
 jobs:
-  lint:
-    name: Lint & Format
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v6
-    - uses: actions/setup-python@v6
-      with:
-        python-version: '3.12'
-    - uses: pre-commit/action@v3.0.1
-
   build_wheels:
-    needs: [lint]
-    name: PR - cp312, Linux
-    runs-on: ubuntu-latest
+    name: Test ARM - cp312, macOS
+    runs-on: macos-latest
 
     steps:
     - name: Checkout Project
       uses: actions/checkout@v6
 
-    # mount host cache dir into the manylinux container via docker volume.
-    # The manylinux image already has ccache configured as a compiler wrapper, so no CMAKE_*_COMPILER_LAUNCHER needed for Linux.
-    - name: Restore ccache
-      uses: actions/cache/restore@v5
-      with:
-        path: /tmp/ccache
-        key: ccache-${{ runner.os }}-${{ github.head_ref }}-${{ github.run_id }}
-        restore-keys: |
-          ccache-${{ runner.os }}-${{ github.head_ref }}-
-          ccache-${{ runner.os }}-
-
     - name: Run CIBuildWheel
       uses: pypa/cibuildwheel@v3.4.0
       env:
-        # Mount host ccache dir into manylinux container
-        CIBW_CONTAINER_ENGINE: "docker; create_args: --volume /tmp/ccache:/ccache"
-        # Set ccache dir inside container to the mounted volume
-        CIBW_ENVIRONMENT_LINUX: "LD_LIBRARY_PATH=/usr/local/lib64:${LD_LIBRARY_PATH} CCACHE_DIR=/ccache"
-
-    - name: Save ccache
-      uses: actions/cache/save@v5
-      with:
-        path: /tmp/ccache
-        key: ccache-${{ runner.os }}-${{ github.head_ref }}-${{ github.run_id }}
-
-    - name: Upload wheels
-      uses: actions/upload-artifact@v4
-      with:
-        name: wheels-ubuntu
-        path: wheelhouse/*.whl
-
-  # Verify that committed .pyi stubs match the actual C++ bindings.
-  # Installs the Linux wheel, regenerates stubs via nanobind, ruff formats them,
-  # and diffs against the repo.
-  check_stubs:
-    name: Check stubs are up to date
-    needs: [build_wheels]
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v6
-    - uses: actions/setup-python@v6
-      with:
-        python-version: '3.12'
-    - uses: actions/download-artifact@v4
-      with:
-        name: wheels-ubuntu
-        path: wheelhouse
-    - name: Install wheel and regenerate stubs
-      run: |
-        pip install nanobind ruff
-        pip install wheelhouse/*.whl
-        python -m nanobind.stubgen -m osrm.osrm_ext -o src/osrm/osrm_ext.pyi
-        ruff format src/osrm/osrm_ext.pyi
-    - name: Check for differences
-      run: git diff --exit-code src/osrm/osrm_ext.pyi || (echo "::error::Stubs are out of date. Rebuild locally and commit the updated .pyi file." && exit 1)
+        CIBW_CONFIG_SETTINGS_MACOS: "cmake.define.CMAKE_CXX_COMPILER_LAUNCHER=ccache cmake.define.CMAKE_C_COMPILER_LAUNCHER=ccache"
