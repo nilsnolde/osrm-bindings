@@ -32,16 +32,8 @@ jobs:
 
   build_wheels:
     needs: [lint]
-    name: PR - cp312, ${{ matrix.name }}
-    runs-on: ${{ matrix.runner }}
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - name: Linux x86_64
-            runner: ubuntu-latest
-          - name: Linux aarch64
-            runner: ubuntu-24.04-arm
+    name: PR - cp312, Linux
+    runs-on: ubuntu-latest
 
     steps:
     - name: Checkout Project
@@ -75,7 +67,7 @@ jobs:
     - name: Upload wheels
       uses: actions/upload-artifact@v4
       with:
-        name: wheels-linux-${{ runner.arch }}
+        name: wheels-ubuntu
         path: wheelhouse/*.whl
 
   # Verify that committed .pyi stubs match the actual C++ bindings.
@@ -92,7 +84,7 @@ jobs:
         python-version: '3.12'
     - uses: actions/download-artifact@v4
       with:
-        name: wheels-linux-X64
+        name: wheels-ubuntu
         path: wheelhouse
     - name: Install wheel and regenerate stubs
       run: |
