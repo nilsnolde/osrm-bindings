@@ -64,6 +64,7 @@ build = "cp312-*"
 build-verbosity = 1
 skip = "*musllinux*"
 manylinux-x86_64-image = "ghcr.io/nilsnolde/manylinux:2_28_osrm_python"
+manylinux-aarch64-image = "ghcr.io/nilsnolde/manylinux:2_28_osrm_python"
 test-requires = "pytest"
 test-command = [
   "cd {project}/tests/data",
