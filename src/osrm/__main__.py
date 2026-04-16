@@ -1,7 +1,16 @@
 import os
+import platform
 import site
 import subprocess
 import sys
+from pathlib import Path
+
+IS_WIN = platform.system().lower() == "windows"
+
+# delvewheel bundles shared DLLs (tbb12, hwloc) into osrm_bindings.libs/.
+# Subprocess-launched executables can't benefit from the .pyd DLL path
+# patching, so we pass PATH explicitly on Windows.
+_LIBS_DIR = Path(__file__).parent.parent / "osrm_bindings.libs"
 
 if len(sys.argv) < 2:
     print("Argument not provided")
@@ -47,7 +56,11 @@ elif sys.argv[1] == "routed":
 for i in range(2, len(sys.argv)):
     exec += " " + sys.argv[i]
 
+env = None
+if IS_WIN and _LIBS_DIR.is_dir():
+    env = {**os.environ, "PATH": str(_LIBS_DIR) + os.pathsep + os.environ.get("PATH", "")}
+
 # will stream any output to the shell
 # shell=True is safe here and lets people use "~" in paths etc
-proc = subprocess.run(exec, encoding="utf-8", shell=True)
+proc = subprocess.run(exec, encoding="utf-8", shell=True, env=env)
 sys.exit(proc.returncode)

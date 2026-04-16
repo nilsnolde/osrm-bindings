@@ -106,7 +106,7 @@ Every `.cpp` file that returns `std::string` from lambdas must `#include <nanobi
 
 ### workflow_dispatch options
 
-- `pull_request.yml` has `test-windows` boolean input (default false) — Windows tests are slow/flaky, skip by default
+- `pull_request.yml` has `test-windows` boolean input (default true) — can be set to false to skip slow/flaky Windows tests
 
 ## Testing
 
@@ -130,6 +130,10 @@ MkDocs Material + mkdocstrings. Reads type stubs from `src/osrm/` via `paths: ["
 ```bash
 cd docs && pip install -r requirements.txt && mkdocs serve
 ```
+
+## Documentation Maintenance
+
+After changes to build system (`pyproject.toml`, `CMakeLists.txt`), CI workflows, platform requirements, test setup, or release process, check whether `docs/docs/pages/development.md` needs updating.
 
 ## Code Quality
 

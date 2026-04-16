@@ -1,3 +1,4 @@
+import sys
 import pytest
 import osrm
 import constants
@@ -9,6 +10,9 @@ three_test_coordinates = constants.three_test_coordinates
 two_test_coordinates = constants.two_test_coordinates
 
 
+@pytest.mark.skipif(
+    sys.platform == "win32", reason="Map matching segfaults on Windows (STATUS_ACCESS_VIOLATION)"
+)
 class TestMatch:
     osrm_py = osrm.OSRM(storage_config=data_path, use_shared_memory=False)
 

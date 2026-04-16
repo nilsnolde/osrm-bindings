@@ -28,3 +28,5 @@ nav:
     - pages/trip.md
   - Other:
     - pages/base.md
+  - Development:
+    - pages/development.md
