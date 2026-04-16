@@ -89,6 +89,8 @@ if(LibOSRM_FOUND)
           PERMISSIONS OWNER_WRITE OWNER_READ GROUP_READ WORLD_READ 
           OWNER_EXECUTE GROUP_EXECUTE WORLD_EXECUTE)
 else()
+  find_package(Git REQUIRED)
+
   include(FetchContent)
   FetchContent_Declare(
     libosrm
@@ -96,7 +98,11 @@ else()
     GIT_TAG ${OSRM_GIT_TAG}
     EXCLUDE_FROM_ALL
     # Make all conan deps static for self-contained wheels (not appropriate for upstream OSRM)
-    PATCH_COMMAND patch -p1 -N -i ${CMAKE_SOURCE_DIR}/patches/conan-static-deps.patch
+    PATCH_COMMAND ${CMAKE_COMMAND}
+      -DGIT_EXECUTABLE=${GIT_EXECUTABLE}
+      -DPATCH_FILE=${CMAKE_SOURCE_DIR}/patches/conan-static-deps.patch
+      -DSOURCE_DIR=<SOURCE_DIR>
+      -P ${CMAKE_SOURCE_DIR}/cmake/apply_patch.cmake
   )
   # Suppress GCC/Clang warnings from OSRM code (not valid for MSVC)
   if (NOT MSVC)
@@ -109,6 +115,13 @@ else()
   if(ENABLE_CONAN)
     set(ENABLE_CONAN ON CACHE BOOL "" FORCE)
   endif()
+  # CMake 4.x FetchContent passes the parent's generator toolset to the subbuild
+  # on every configure. If the subbuild's CMakeCache.txt was written without an
+  # explicit toolset (first run), subsequent runs fail with "toolset does not match".
+  # Deleting the subbuild CMakeCache forces it to reconfigure cleanly each time.
+  # ExternalProject stamp files live elsewhere and are unaffected, so OSRM is
+  # not recompiled.
+  file(REMOVE "${CMAKE_BINARY_DIR}/_deps/libosrm-subbuild/CMakeCache.txt")
   FetchContent_MakeAvailable(libosrm)
 
   target_include_directories(${EXT_NAME}
@@ -129,6 +142,7 @@ else()
   add_dependencies(${EXT_NAME} ${OSRM_EXECUTABLES})
   install(TARGETS ${OSRM_EXECUTABLES} DESTINATION bin)
   install(DIRECTORY ${libosrm_SOURCE_DIR}/profiles DESTINATION share/osrm)
+
 endif()
 
 if (MSVC)
