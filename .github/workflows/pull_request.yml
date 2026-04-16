@@ -3,7 +3,7 @@ name: Pull Request
 on:
   pull_request:
     branches:
-      - none
+      - main
     paths-ignore:
       - '*.md'
   workflow_dispatch:
@@ -63,6 +63,12 @@ jobs:
       with:
         path: /tmp/ccache
         key: ccache-${{ runner.os }}-${{ github.head_ref }}-${{ github.run_id }}
+
+    - name: Upload wheels
+      uses: actions/upload-artifact@v4
+      with:
+        name: wheels-ubuntu
+        path: wheelhouse/*.whl
 
   # Verify that committed .pyi stubs match the actual C++ bindings.
   # Installs the Linux wheel, regenerates stubs via nanobind, ruff formats them,

@@ -67,7 +67,7 @@ jobs:
 
     - name: Save Conan cache
       uses: actions/cache/save@v5
-      if: "runner.os == 'Windows' && steps.conan-cache.outputs.cache-hit != 'true'"
+      if: "!cancelled() && runner.os == 'Windows' && steps.conan-cache.outputs.cache-hit != 'true'"
       with:
         path: ~/.conan2
         key: v4-conan-${{ runner.os }}-${{ hashFiles('pyproject.toml') }}
