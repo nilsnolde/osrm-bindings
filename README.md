@@ -2,6 +2,8 @@
 [![Push Master](https://github.com/nilsnolde/osrm-bindings/actions/workflows/push_master.yml/badge.svg)](https://github.com/nilsnolde/osrm-bindings/actions/workflows/push_master.yml)
 [![osrm-bindings version](https://img.shields.io/pypi/v/osrm-bindings?label=osrm-bindings)](https://pypi.org/project/osrm-bindings/)
 
+> [!WARNING]
+> The bindings moved to upstream [osrm-backend](https://github.com/Project-OSRM/osrm-backend/tree/master/src/python) on 03.05.2026.
 
 **osrm-bindings is a Python package that binds to [osrm-backend](https://github.com/Project-OSRM/osrm-backend) using [nanobind](https://github.com/wjakob/nanobind).**
 
